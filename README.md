@@ -120,7 +120,7 @@ The app will be running and ready to use! 🎉
 
 ## 🌐 Live Demo
 
-**Deployed on Vercel:** [https://physics-calculator.vercel.app](https://physics-calculator.vercel.app)
+**Deployed on Vercel:** [https://phy-101.vercel.app)
 
 Try it now - no installation required!
 
