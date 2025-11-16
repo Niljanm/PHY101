@@ -10,14 +10,18 @@
 </head>
 <body>
     <div class="container">
+        <!-- Mobile Header with Menu Button -->
+        <div class="mobile-header">
+            <button class="mobile-menu-btn" id="mobileMenuBtn" onclick="toggleSidebar()">☰</button>
+            <h1 class="mobile-title">⚛️ Physics Lab</h1>
+            <button class="theme-toggle" id="themeToggle">🌙</button>
+        </div>
+        
         <!-- Sidebar Navigation -->
         <nav class="sidebar" id="sidebar">
             <div class="sidebar-header">
                 <h1 class="logo">⚛️ Physics Lab</h1>
-                <div class="header-buttons">
-                    <button class="theme-toggle" id="themeToggle">🌙</button>
-                    <button class="minimize-btn" id="minimizeBtn" onclick="toggleSidebar()">☰</button>
-                </div>
+                <button class="theme-toggle" id="themeToggle2">🌙</button>
             </div>
             
             <div class="nav-section">

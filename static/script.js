@@ -7,11 +7,35 @@ let calcExpression = '0';
 let sidebarCollapsed = false;
 
 // Theme Management
-document.getElementById('themeToggle').addEventListener('click', toggleTheme);
+function initializeThemeButtons() {
+    const themeBtn1 = document.getElementById('themeToggle');
+    const themeBtn2 = document.getElementById('themeToggle2');
+    
+    if (themeBtn1) {
+        themeBtn1.addEventListener('click', toggleTheme);
+    }
+    if (themeBtn2) {
+        themeBtn2.addEventListener('click', toggleTheme);
+    }
+}
 
 function toggleTheme() {
     document.body.classList.toggle('light-mode');
     localStorage.setItem('theme', document.body.classList.contains('light-mode') ? 'light' : 'dark');
+    updateThemeButtons();
+}
+
+function updateThemeButtons() {
+    const isDark = !document.body.classList.contains('light-mode');
+    const themeBtn1 = document.getElementById('themeToggle');
+    const themeBtn2 = document.getElementById('themeToggle2');
+    
+    if (themeBtn1) {
+        themeBtn1.textContent = isDark ? '☀️' : '🌙';
+    }
+    if (themeBtn2) {
+        themeBtn2.textContent = isDark ? '☀️' : '🌙';
+    }
 }
 
 // Sidebar Toggle
@@ -20,10 +44,15 @@ function toggleSidebar() {
     sidebarCollapsed = !sidebarCollapsed;
     sidebar.classList.toggle('collapsed');
     localStorage.setItem('sidebarCollapsed', sidebarCollapsed);
+    
+    // On mobile, auto-close sidebar when navigating (handled by nav-btn click handlers)
 }
 
 // Load saved theme and sidebar state
 window.addEventListener('load', () => {
+    initializeThemeButtons();
+    updateThemeButtons();
+    
     const savedTheme = localStorage.getItem('theme');
     if (savedTheme === 'light') {
         document.body.classList.add('light-mode');
@@ -58,6 +87,16 @@ function loadModule(moduleName) {
     
     // Update active button
     document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+    
+    // Auto-close sidebar on mobile after selecting module
+    if (window.innerWidth < 769) {
+        const sidebar = document.getElementById('sidebar');
+        if (!sidebar.classList.contains('collapsed')) {
+            sidebar.classList.add('collapsed');
+            sidebarCollapsed = true;
+            localStorage.setItem('sidebarCollapsed', sidebarCollapsed);
+        }
+    }
 }
 
 // ==================== CALCULATION FUNCTIONS ====================
