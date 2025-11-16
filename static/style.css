@@ -736,14 +736,14 @@ body {
     
     .sidebar {
         width: 100%;
-        height: auto;
+        height: 60px;
         border-right: none;
         border-bottom: 1px solid var(--border-color);
         flex-direction: row;
-        overflow-x: auto;
-        overflow-y: hidden;
-        max-height: 60px;
+        overflow: hidden;
         flex-wrap: nowrap;
+        position: relative;
+        z-index: 50;
     }
     
     .sidebar.collapsed {
@@ -753,8 +753,13 @@ body {
         overflow-x: hidden;
         flex-direction: column;
         height: auto;
-        position: relative;
+        position: fixed;
+        top: 60px;
+        left: 0;
+        right: 0;
         z-index: 100;
+        background-color: var(--bg-dark);
+        border-bottom: 1px solid var(--border-color);
     }
     
     .sidebar.collapsed .sidebar-header {
@@ -764,6 +769,9 @@ body {
         min-width: auto;
         width: 100%;
         padding: 10px 12px;
+        position: sticky;
+        top: 0;
+        background-color: var(--bg-dark);
     }
     
     .sidebar.collapsed .nav-section {
@@ -771,20 +779,28 @@ body {
         padding: 8px 0;
         gap: 0;
         border: none;
+        width: 100%;
     }
     
     .sidebar.collapsed .nav-btn {
         width: 100%;
         height: auto;
-        padding: 10px 15px;
+        padding: 12px 15px;
         margin: 0;
-        font-size: 13px;
+        font-size: 14px;
         text-align: left;
         border-radius: 0;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        border: none;
+        border-bottom: 1px solid var(--border-color);
     }
     
     .sidebar.collapsed .nav-btn::before {
-        display: none;
+        content: attr(data-emoji);
+        display: inline;
+        margin-right: 8px;
     }
     
     .sidebar-header {
