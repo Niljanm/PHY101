@@ -44,8 +44,6 @@ function toggleSidebar() {
     sidebarCollapsed = !sidebarCollapsed;
     sidebar.classList.toggle('collapsed');
     localStorage.setItem('sidebarCollapsed', sidebarCollapsed);
-    
-    // On mobile, auto-close sidebar when navigating (handled by nav-btn click handlers)
 }
 
 // Load saved theme and sidebar state
@@ -150,9 +148,9 @@ async function calculate(module) {
             if (ohmTab && ohmTab.classList.contains('active')) {
                 inputs = {
                     type: 'ohms',
-                    V: parseFloat(document.getElementById('elec_V').value) || 0,
-                    I: parseFloat(document.getElementById('elec_I').value) || 0,
-                    R: parseFloat(document.getElementById('elec_R').value) || 0
+                    v: parseFloat(document.getElementById('elec_V').value) || 0,
+                    i: parseFloat(document.getElementById('elec_I').value) || 0,
+                    r: parseFloat(document.getElementById('elec_R').value) || 0
                 };
             } else {
                 inputs = {
@@ -181,26 +179,26 @@ async function calculate(module) {
             } else if (addTab && addTab.classList.contains('active')) {
                 inputs = {
                     type: 'addition',
-                    ax: parseFloat(document.getElementById('vec_add_ax').value) || 0,
-                    ay: parseFloat(document.getElementById('vec_add_ay').value) || 0,
-                    bx: parseFloat(document.getElementById('vec_add_bx').value) || 0,
-                    by: parseFloat(document.getElementById('vec_add_by').value) || 0
+                    x1: parseFloat(document.getElementById('vec_add_ax').value) || 0,
+                    y1: parseFloat(document.getElementById('vec_add_ay').value) || 0,
+                    x2: parseFloat(document.getElementById('vec_add_bx').value) || 0,
+                    y2: parseFloat(document.getElementById('vec_add_by').value) || 0
                 };
             } else if (dotTab && dotTab.classList.contains('active')) {
                 inputs = {
                     type: 'dot',
-                    ax: parseFloat(document.getElementById('vec_dot_ax').value) || 0,
-                    ay: parseFloat(document.getElementById('vec_dot_ay').value) || 0,
-                    bx: parseFloat(document.getElementById('vec_dot_bx').value) || 0,
-                    by: parseFloat(document.getElementById('vec_dot_by').value) || 0
+                    x1: parseFloat(document.getElementById('vec_dot_ax').value) || 0,
+                    y1: parseFloat(document.getElementById('vec_dot_ay').value) || 0,
+                    x2: parseFloat(document.getElementById('vec_dot_bx').value) || 0,
+                    y2: parseFloat(document.getElementById('vec_dot_by').value) || 0
                 };
             } else {
                 inputs = {
                     type: 'angle',
-                    ax: parseFloat(document.getElementById('vec_angle_ax').value) || 0,
-                    ay: parseFloat(document.getElementById('vec_angle_ay').value) || 0,
-                    bx: parseFloat(document.getElementById('vec_angle_bx').value) || 0,
-                    by: parseFloat(document.getElementById('vec_angle_by').value) || 0
+                    x1: parseFloat(document.getElementById('vec_angle_ax').value) || 0,
+                    y1: parseFloat(document.getElementById('vec_angle_ay').value) || 0,
+                    x2: parseFloat(document.getElementById('vec_angle_bx').value) || 0,
+                    y2: parseFloat(document.getElementById('vec_angle_by').value) || 0
                 };
             }
             endpoint = '/api/vectors';
@@ -303,9 +301,9 @@ function getInputsForModule(module) {
             };
         case 'electricity':
             return {
-                V: parseFloat(document.getElementById('elec_V').value) || 0,
-                I: parseFloat(document.getElementById('elec_I').value) || 0,
-                R: parseFloat(document.getElementById('elec_R').value) || 0
+                v: parseFloat(document.getElementById('elec_V').value) || 0,
+                i: parseFloat(document.getElementById('elec_I').value) || 0,
+                r: parseFloat(document.getElementById('elec_R').value) || 0
             };
         case 'vectors':
             return {
@@ -316,49 +314,17 @@ function getInputsForModule(module) {
         default:
             return {};
     }
-        case 'momentum':
-            return {
-                m1: parseFloat(document.getElementById('mom_m1').value) || 0,
-                v1: parseFloat(document.getElementById('mom_v1').value) || 0,
-                m2: parseFloat(document.getElementById('mom_m2').value) || 0,
-                v2: parseFloat(document.getElementById('mom_v2').value) || 0
-            };
-        case 'optics':
-            return {
-                f: parseFloat(document.getElementById('opt_f').value) || 0,
-                u: parseFloat(document.getElementById('opt_u').value) || 0,
-                v: parseFloat(document.getElementById('opt_v').value) || 0
-            };
-        case 'thermo':
-            return {
-                m: parseFloat(document.getElementById('therm_m').value) || 0,
-                c: parseFloat(document.getElementById('therm_c').value) || 0,
-                delta_t: parseFloat(document.getElementById('therm_dt').value) || 0
-            };
-        case 'electrostatics':
-            return {
-                q1: parseFloat(document.getElementById('elec_q1').value) || 0,
-                q2: parseFloat(document.getElementById('elec_q2').value) || 0,
-                r: parseFloat(document.getElementById('elec_r').value) || 0
-            };
-        default:
-            return {};
-    }
 }
 
 function generateGraph(module, results, inputs) {
     // Map module names to graph div prefixes
     const prefixMap = {
         'kinematics': 'kin',
-        'ohms': 'ohm',
-        'energy': 'ener',
+        'freefall': 'ff',
+        'work_energy': 'we',
         'momentum': 'mom',
-        'optics': 'opt',
-        'thermo': 'therm',
-        'circular': 'circ',
-        'projectile': 'proj',
-        'shm': 'shm',
-        'electrostatics': 'elec'
+        'electricity': 'elec',
+        'vectors': 'vec'
     };
     
     const modulePrefix = prefixMap[module];
@@ -403,102 +369,35 @@ function generateGraph(module, results, inputs) {
             layout.yaxis.title = 'Velocity (m/s)';
             break;
             
-        case 'ohms':
-            if (inputs.R > 0) {
-                const currents = Array.from({length: 50}, (_, i) => i * 10 / 50);
-                const voltages = currents.map(I => I * inputs.R);
-                const powers = currents.map(I => I * I * inputs.R);
+        case 'freefall':
+            if (inputs.t > 0) {
+                const times = Array.from({length: 50}, (_, i) => i * inputs.t / 50);
+                const velocities = times.map(t => inputs.v0 + inputs.g * t);
+                const heights = times.map(t => inputs.v0 * t + 0.5 * inputs.g * t * t);
                 
                 data = [
-                    { x: currents, y: voltages, name: 'Voltage (V)', type: 'scatter', mode: 'lines', line: { color: '#64b5f6', width: 3 }, fill: 'tozeroy', fillcolor: 'rgba(100, 181, 246, 0.2)' },
-                    { x: currents, y: powers, name: 'Power (W)', type: 'scatter', mode: 'lines', line: { color: '#ef5350', width: 3 }, yaxis: 'y2', fill: 'tozeroy', fillcolor: 'rgba(239, 83, 80, 0.2)' }
+                    { x: times, y: velocities, name: 'Velocity (m/s)', type: 'scatter', mode: 'lines', line: { color: '#90caf9', width: 3 }, fill: 'tozeroy', fillcolor: 'rgba(144, 202, 249, 0.2)' },
+                    { x: times, y: heights, name: 'Height (m)', type: 'scatter', mode: 'lines', line: { color: '#4dd0e1', width: 3 }, yaxis: 'y2', fill: 'tozeroy', fillcolor: 'rgba(77, 208, 225, 0.2)' }
                 ];
-                layout.yaxis2 = { title: 'Power (W)', overlaying: 'y', side: 'right', gridcolor: 'rgba(239, 83, 80, 0.2)' };
-                layout.title += ` | Resistance: ${inputs.R.toFixed(2)} Ω`;
+                layout.yaxis2 = { title: 'Height (m)', overlaying: 'y', side: 'right' };
             }
-            layout.xaxis.title = 'Current (A)';
-            layout.yaxis.title = 'Voltage (V)';
+            layout.xaxis.title = 'Time (s)';
+            layout.yaxis.title = 'Velocity (m/s)';
             break;
             
-        case 'energy':
-            if (inputs.m > 0 && inputs.h > 0) {
-                const heights = Array.from({length: 50}, (_, i) => i * inputs.h / 50);
-                const velocities = Array.from({length: 50}, (_, i) => i * 20 / 50);
-                const PE = heights.map(h => inputs.m * inputs.g * h);
-                const KE = velocities.map(v => 0.5 * inputs.m * v * v);
-                const maxPE = inputs.m * inputs.g * inputs.h;
-                const maxKE = 0.5 * inputs.m * 400;
+        case 'work_energy':
+            if (inputs.mass > 0 && inputs.height > 0) {
+                const heights = Array.from({length: 50}, (_, i) => i * inputs.height / 50);
+                const PE = heights.map(h => inputs.mass * inputs.g * h);
+                const KE = Array.from({length: 50}, (_, i) => 0.5 * inputs.mass * Math.pow(inputs.velocity, 2) * i / 50);
                 
                 data = [
                     { x: heights, y: PE, name: 'Potential Energy (J)', type: 'scatter', mode: 'lines', line: { color: '#81c784', width: 3 }, fill: 'tozeroy', fillcolor: 'rgba(129, 199, 132, 0.2)' },
-                    { x: velocities, y: KE, name: 'Kinetic Energy (J)', type: 'scatter', mode: 'lines', line: { color: '#ff7043', width: 3 }, fill: 'tozeroy', fillcolor: 'rgba(255, 112, 67, 0.2)' }
+                    { x: Array.from({length: 50}, (_, i) => i * inputs.velocity / 50), y: KE, name: 'Kinetic Energy (J)', type: 'scatter', mode: 'lines', line: { color: '#ff7043', width: 3 }, fill: 'tozeroy', fillcolor: 'rgba(255, 112, 67, 0.2)' }
                 ];
-                layout.xaxis.title = 'Height (m) / Velocity (m/s)';
-                layout.yaxis.title = 'Energy (J)';
-                layout.title += ` | Max PE: ${maxPE.toFixed(2)} J | Max KE: ${maxKE.toFixed(2)} J`;
             }
-            break;
-            
-        case 'projectile':
-            if (inputs.v0 > 0 && inputs.theta >= 0) {
-                const theta_rad = inputs.theta * Math.PI / 180;
-                const t_flight = 2 * inputs.v0 * Math.sin(theta_rad) / inputs.g;
-                const range = inputs.v0 * inputs.v0 * Math.sin(2 * theta_rad) / inputs.g;
-                const maxHeight = (inputs.v0 * inputs.v0 * Math.sin(theta_rad) * Math.sin(theta_rad)) / (2 * inputs.g);
-                const times = Array.from({length: 100}, (_, i) => i * t_flight / 100);
-                const x = times.map(t => inputs.v0 * Math.cos(theta_rad) * t);
-                const y = times.map(t => inputs.v0 * Math.sin(theta_rad) * t - 0.5 * inputs.g * t * t);
-                
-                data = [
-                    { x: x, y: y, name: 'Trajectory', type: 'scatter', mode: 'lines+markers', line: { color: '#64b5f6', width: 3 }, marker: { size: 4 }, fill: 'tozeroy', fillcolor: 'rgba(100, 181, 246, 0.15)' },
-                    { x: [range], y: [0], name: 'Landing Point', type: 'scatter', mode: 'markers', marker: { size: 10, color: '#ff5722', symbol: 'star' } }
-                ];
-                layout.xaxis.title = 'Horizontal Distance (m)';
-                layout.yaxis.title = 'Height (m)';
-                layout.title = `Projectile Trajectory | Range: ${range.toFixed(2)} m | Max Height: ${maxHeight.toFixed(2)} m`;
-            }
-            break;
-            
-        case 'circular':
-            if (inputs.v > 0 && inputs.r > 0) {
-                const angles = Array.from({length: 100}, (_, i) => i * 2 * Math.PI / 100);
-                const x = angles.map(a => inputs.r * Math.cos(a));
-                const y = angles.map(a => inputs.r * Math.sin(a));
-                const period = 2 * Math.PI * inputs.r / inputs.v;
-                const frequency = inputs.v / (2 * Math.PI * inputs.r);
-                const centripetal = inputs.v * inputs.v / inputs.r;
-                
-                data = [
-                    { x: x, y: y, name: 'Circular Path', type: 'scatter', mode: 'lines', line: { color: '#ba68c8', width: 3 }, fill: 'toself', fillcolor: 'rgba(186, 104, 200, 0.1)' },
-                    { x: [0], y: [0], name: 'Center', type: 'scatter', mode: 'markers', marker: { size: 10, color: '#ff9800', symbol: 'diamond' } }
-                ];
-                layout.xaxis.title = 'X (m)';
-                layout.yaxis.title = 'Y (m)';
-                layout.title = `Circular Motion | Radius: ${inputs.r.toFixed(2)} m | Period: ${period.toFixed(3)} s | Centripetal Accel: ${centripetal.toFixed(2)} m/s²`;
-                layout.xaxis.scaleanchor = 'y';
-                layout.yaxis.scaleanchor = 'x';
-            }
-            break;
-            
-        case 'shm':
-            if (inputs.m > 0 && inputs.k > 0 && inputs.A > 0) {
-                const omega = Math.sqrt(inputs.k / inputs.m);
-                const period = 2 * Math.PI / omega;
-                const frequency = 1 / period;
-                const times = Array.from({length: 200}, (_, i) => i * 3 * period / 200);
-                const displacement = times.map(t => inputs.A * Math.sin(omega * t));
-                const velocity = times.map(t => inputs.A * omega * Math.cos(omega * t));
-                const maxVel = inputs.A * omega;
-                
-                data = [
-                    { x: times, y: displacement, name: 'Displacement (m)', type: 'scatter', mode: 'lines', line: { color: '#29b6f6', width: 3 }, fill: 'tozeroy', fillcolor: 'rgba(41, 182, 246, 0.2)' },
-                    { x: times, y: velocity, name: 'Velocity (m/s)', type: 'scatter', mode: 'lines', line: { color: '#ffa726', width: 3 }, yaxis: 'y2', fill: 'tozeroy', fillcolor: 'rgba(255, 167, 38, 0.2)' }
-                ];
-                layout.yaxis2 = { title: 'Velocity (m/s)', overlaying: 'y', side: 'right', gridcolor: 'rgba(255, 167, 38, 0.2)' };
-                layout.title = `Simple Harmonic Motion | Period: ${period.toFixed(3)} s | Frequency: ${frequency.toFixed(2)} Hz | Max Velocity: ${maxVel.toFixed(2)} m/s`;
-            }
-            layout.xaxis.title = 'Time (s)';
-            layout.yaxis.title = 'Displacement (m)';
+            layout.xaxis.title = 'Parameter';
+            layout.yaxis.title = 'Energy (J)';
             break;
             
         case 'momentum':
@@ -510,58 +409,36 @@ function generateGraph(module, results, inputs) {
                 data = [
                     { x: masses, y: momenta, name: 'Momentum (kg·m/s)', type: 'scatter', mode: 'lines+markers', line: { color: '#4dd0e1', width: 3 }, marker: { size: 5 }, fill: 'tozeroy', fillcolor: 'rgba(77, 208, 225, 0.2)' }
                 ];
-                layout.xaxis.title = 'Mass (kg)';
-                layout.yaxis.title = 'Momentum (kg·m/s)';
                 layout.title += ` | Total Momentum: ${totalMomentum.toFixed(2)} kg·m/s`;
             }
+            layout.xaxis.title = 'Mass (kg)';
+            layout.yaxis.title = 'Momentum (kg·m/s)';
             break;
             
-        case 'optics':
-            if (inputs.f > 0 && inputs.u > inputs.f) {
-                const distances = Array.from({length: 50}, (_, i) => (i + 1) * inputs.u / 50);
-                const imageDistances = distances.map(u => (inputs.f * u) / (u - inputs.f));
-                const magnifications = distances.map((u, idx) => -(imageDistances[idx] / u));
+        case 'electricity':
+            if (inputs.r > 0) {
+                const resistances = Array.from({length: 50}, (_, i) => (i + 1) * inputs.r / 50);
+                const currents = resistances.map(R => inputs.v > 0 ? inputs.v / R : 0);
+                const powers = resistances.map(R => inputs.v > 0 ? (inputs.v * inputs.v) / R : 0);
                 
                 data = [
-                    { x: distances, y: imageDistances, name: 'Image Distance (m)', type: 'scatter', mode: 'lines', line: { color: '#4dd0e1', width: 3 }, fill: 'tozeroy', fillcolor: 'rgba(77, 208, 225, 0.2)' },
-                    { x: distances, y: magnifications, name: 'Magnification', type: 'scatter', mode: 'lines', line: { color: '#ffb74d', width: 3 }, yaxis: 'y2', fill: 'tozeroy', fillcolor: 'rgba(255, 183, 77, 0.2)' }
+                    { x: resistances, y: currents, name: 'Current (A)', type: 'scatter', mode: 'lines', line: { color: '#64b5f6', width: 3 }, fill: 'tozeroy', fillcolor: 'rgba(100, 181, 246, 0.2)' },
+                    { x: resistances, y: powers, name: 'Power (W)', type: 'scatter', mode: 'lines', line: { color: '#ef5350', width: 3 }, yaxis: 'y2', fill: 'tozeroy', fillcolor: 'rgba(239, 83, 80, 0.2)' }
                 ];
-                layout.yaxis2 = { title: 'Magnification', overlaying: 'y', side: 'right', gridcolor: 'rgba(255, 183, 77, 0.2)' };
-                layout.xaxis.title = 'Object Distance (m)';
-                layout.yaxis.title = 'Image Distance (m)';
-                layout.title += ` | Focal Length: ${inputs.f.toFixed(2)} m`;
+                layout.yaxis2 = { title: 'Power (W)', overlaying: 'y', side: 'right' };
             }
+            layout.xaxis.title = 'Resistance (Ω)';
+            layout.yaxis.title = 'Current (A)';
             break;
             
-        case 'thermo':
-            if (inputs.m > 0 && inputs.c > 0) {
-                const tempChanges = Array.from({length: 50}, (_, i) => i * (inputs.delta_t > 0 ? inputs.delta_t : 100) / 50);
-                const heat = tempChanges.map(dt => inputs.m * inputs.c * dt);
-                const totalHeat = inputs.m * inputs.c * (inputs.delta_t > 0 ? inputs.delta_t : 100);
-                
-                data = [
-                    { x: tempChanges, y: heat, name: 'Heat Energy (J)', type: 'scatter', mode: 'lines+markers', line: { color: '#ef5350', width: 3 }, marker: { size: 5 }, fill: 'tozeroy', fillcolor: 'rgba(239, 83, 80, 0.2)' }
-                ];
-                layout.xaxis.title = 'Temperature Change (°C)';
-                layout.yaxis.title = 'Heat Energy (J)';
-                layout.title += ` | Specific Heat Capacity: ${inputs.c.toFixed(2)} J/(kg·°C) | Total Heat: ${totalHeat.toFixed(2)} J`;
-            }
-            break;
-            
-        case 'electrostatics':
-            if (inputs.q1 !== 0 && inputs.q2 !== 0 && inputs.r > 0) {
-                const distances = Array.from({length: 50}, (_, i) => (i + 1) * inputs.r / 50);
-                const k = 8.99e9;
-                const forces = distances.map(r => Math.abs((k * inputs.q1 * inputs.q2) / (r * r)));
-                const forceAtR = Math.abs((k * inputs.q1 * inputs.q2) / (inputs.r * inputs.r));
-                
-                data = [
-                    { x: distances, y: forces, name: 'Coulomb Force (N)', type: 'scatter', mode: 'lines', line: { color: '#ce93d8', width: 3 }, fill: 'tozeroy', fillcolor: 'rgba(206, 147, 216, 0.2)' }
-                ];
-                layout.xaxis.title = 'Distance (m)';
-                layout.yaxis.title = 'Force (N)';
-                layout.title += ` | Force @ ${inputs.r.toFixed(2)} m: ${forceAtR.toFixed(2)} N`;
-            }
+        case 'vectors':
+            const mag = Math.sqrt(inputs.x*inputs.x + inputs.y*inputs.y + inputs.z*inputs.z);
+            data = [
+                { x: [0, inputs.x], y: [0, inputs.y], name: 'Vector', type: 'scatter', mode: 'lines+markers', line: { color: '#90caf9', width: 3 }, marker: { size: 8 } }
+            ];
+            layout.title += ` | Magnitude: ${mag.toFixed(2)}`;
+            layout.xaxis.title = 'X Component';
+            layout.yaxis.title = 'Y Component';
             break;
     }
     
@@ -623,50 +500,24 @@ function formatKey(key) {
         'E': 'Energy',
         'max_v': 'Max Velocity',
         'F': 'Force',
-        'result': 'Result'
+        'result': 'Result',
+        'magnitude': 'Magnitude',
+        'resultant_x': 'Result X',
+        'resultant_y': 'Result Y',
+        'dot_product': 'Dot Product',
+        'angle_degrees': 'Angle (°)',
+        'angle_radians': 'Angle (rad)',
+        'final_velocity': 'Final Velocity',
+        'height': 'Height',
+        'kinetic_energy': 'Kinetic Energy',
+        'potential_energy': 'Potential Energy',
+        'total_energy': 'Total Energy',
+        'force': 'Force',
+        'distance': 'Distance',
+        'work': 'Work',
+        'power': 'Power'
     };
-    return keyMap[key] || key;
-}
-
-// ==================== CALCULATOR FUNCTIONS ====================
-function appendCalc(value) {
-    if (calcExpression === '0' && value !== '.') {
-        calcExpression = value;
-    } else {
-        calcExpression += value;
-    }
-    updateCalcDisplay();
-}
-
-function updateCalcDisplay() {
-    document.getElementById('calc_display').value = calcExpression;
-}
-
-function clearCalc() {
-    calcExpression = '0';
-    updateCalcDisplay();
-}
-
-async function calculateCalc() {
-    try {
-        const response = await fetch('/api/calculator', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ expression: calcExpression })
-        });
-        
-        const results = await response.json();
-        if (results.result !== undefined) {
-            calcExpression = results.result.toString();
-            updateCalcDisplay();
-        } else if (results.error) {
-            alert('Error: ' + results.error);
-        }
-    } catch (error) {
-        alert('Calculation error: ' + error.message);
-    }
+    return keyMap[key] || key.replace(/_/g, ' ').replace(/([a-z])([A-Z])/g, '$1 $2');
 }
 
 // ==================== HISTORY ====================
@@ -723,12 +574,13 @@ function showFormulas() {
             'v² = u² + 2as',
             's = (u + v)t / 2'
         ],
-        'Ohm\'s Law': [
-            'V = IR',
-            'P = VI',
-            'P = I²R'
+        'Freefall Dynamics': [
+            'h = v₀t + ½gt²',
+            'v = v₀ + gt',
+            'v² = v₀² + 2gh'
         ],
-        'Energy': [
+        'Work & Energy': [
+            'Work = Force × Distance',
             'KE = ½mv²',
             'PE = mgh',
             'E = KE + PE'
@@ -738,35 +590,15 @@ function showFormulas() {
             'F = Δp/Δt',
             'p_total = p₁ + p₂'
         ],
-        'Optics': [
-            '1/f = 1/u + 1/v',
-            'm = -v/u',
-            'f = R/2'
+        'Electricity': [
+            'Ohm\'s Law: V = IR',
+            'Power: P = VI',
+            'Coulomb\'s Law: F = kq₁q₂/r²'
         ],
-        'Thermodynamics': [
-            'Q = mcΔT',
-            'ΔE = Q - W',
-            'PV = nRT'
-        ],
-        'Circular Motion': [
-            'v = ωr',
-            'F_c = mv²/r',
-            'T = 2π/ω'
-        ],
-        'Projectile Motion': [
-            'x = v₀cos(θ)t',
-            'y = v₀sin(θ)t - ½gt²',
-            'R = v₀²sin(2θ)/g'
-        ],
-        'SHM': [
-            'x = A sin(ωt + φ)',
-            'v = Aω cos(ωt + φ)',
-            'T = 2π√(m/k)'
-        ],
-        'Electrostatics': [
-            'F = k|q₁q₂|/r²',
-            'E = kQ/r²',
-            'V = kQ/r'
+        'Vectors': [
+            'Magnitude: |v| = √(x² + y² + z²)',
+            'Addition: v_resultant = v₁ + v₂',
+            'Dot Product: v₁ · v₂ = |v₁||v₂|cos(θ)'
         ]
     };
     
@@ -805,74 +637,4 @@ window.addEventListener('click', (e) => {
     if (e.target.classList.contains('modal')) {
         e.target.classList.add('hidden');
     }
-});
-
-// ==================== UNIT CONVERTER ====================
-const unitSystems = {
-    speed: ['m/s', 'km/h', 'mph', 'ft/s', 'knots'],
-    mass: ['kg', 'g', 'mg', 'lb', 'oz'],
-    distance: ['m', 'cm', 'mm', 'km', 'ft', 'in', 'mile'],
-    energy: ['J', 'kJ', 'MJ', 'cal', 'kcal', 'eV', 'Wh'],
-    voltage: ['V', 'kV', 'mV', 'μV']
-};
-
-function updateConverterUnits() {
-    const type = document.getElementById('conv_type').value;
-    const units = unitSystems[type];
-    
-    const fromSelect = document.getElementById('conv_from');
-    const toSelect = document.getElementById('conv_to');
-    
-    fromSelect.innerHTML = units.map(u => `<option value="${u}">${u}</option>`).join('');
-    toSelect.innerHTML = units.map(u => `<option value="${u}">${u}</option>`).join('');
-    
-    if (units.length > 1) {
-        toSelect.value = units[1];
-    }
-}
-
-async function convertUnits() {
-    const type = document.getElementById('conv_type').value;
-    const value = parseFloat(document.getElementById('conv_value').value) || 0;
-    const fromUnit = document.getElementById('conv_from').value;
-    const toUnit = document.getElementById('conv_to').value;
-    
-    if (value === 0 || !fromUnit || !toUnit) {
-        alert('Please enter a value and select units');
-        return;
-    }
-    
-    try {
-        const response = await fetch('/api/converter', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ type, value, from_unit: fromUnit, to_unit: toUnit })
-        });
-        
-        const result = await response.json();
-        
-        if (!result.success || !result.data || result.data.result === undefined) {
-            alert('Conversion failed: Invalid response from server');
-            return;
-        }
-        
-        const resultsDiv = document.getElementById('conv_results');
-        resultsDiv.innerHTML = `
-            <h3>✓ Result</h3>
-            <div class="result-item">
-                <div class="result-label">${value} ${fromUnit}</div>
-                <div class="result-value">=</div>
-                <div class="result-label">${result.data.result.toFixed(6)} ${toUnit}</div>
-            </div>
-        `;
-        resultsDiv.style.display = 'block';
-    } catch (error) {
-        console.error('Conversion error:', error);
-        alert('Conversion error: ' + error.message);
-    }
-}
-
-// Initialize converter on page load
-window.addEventListener('load', () => {
-    updateConverterUnits();
 });
