@@ -29,29 +29,23 @@ def load_history():
 
 def save_to_history(module, inputs, outputs):
     """Save calculation to history"""
+    entry = {
+        'timestamp': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+        'module': module,
+        'inputs': inputs,
+        'outputs': outputs
+    }
     try:
         history = load_history()
-        entry = {
-            'timestamp': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
-            'module': module,
-            'inputs': inputs,
-            'outputs': outputs
-        }
         history.append(entry)
         HISTORY_FILE.parent.mkdir(parents=True, exist_ok=True)
         with open(HISTORY_FILE, 'w') as f:
             json.dump(history, f, indent=2)
-        return entry
-    except (OSError, IOError):
+    except (OSError, IOError, PermissionError):
         # Silently fail on read-only filesystem (Vercel)
-        # Return the entry anyway so calculations still work
-        entry = {
-            'timestamp': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
-            'module': module,
-            'inputs': inputs,
-            'outputs': outputs
-        }
-        return entry
+        # Calculations still work, history just doesn't persist
+        pass
+    return entry
 
 # ==================== KINEMATICS ====================
 @app.route('/api/kinematics', methods=['POST'])
