@@ -162,7 +162,16 @@ async function calculate(module) {
             body: JSON.stringify(inputs)
         });
         
-        const results = await response.json();
+        const response_data = await response.json();
+        
+        // Extract data from new response format
+        const results = response_data.success ? response_data.data : response_data;
+        
+        if (!response_data.success && response_data.error) {
+            alert('Calculation error: ' + response_data.error);
+            return;
+        }
+        
         displayResults(module, results);
         loadHistory();
     } catch (error) {
@@ -197,7 +206,7 @@ function displayResults(module, results) {
     
     let html = '<h3>✓ Results</h3>';
     for (const [key, value] of Object.entries(results)) {
-        if (key !== 'error') {
+        if (key !== 'error' && key !== 'success' && key !== 'data') {
             const displayKey = formatKey(key);
             const displayValue = typeof value === 'number' ? value.toFixed(4) : value;
             html += `<div class="result-item">
