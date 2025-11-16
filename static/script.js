@@ -203,6 +203,23 @@ async function calculate(module) {
             }
             endpoint = '/api/vectors';
             break;
+        case 'projectile':
+            inputs = {
+                v0: parseFloat(document.getElementById('proj_v0').value) || 0,
+                theta: parseFloat(document.getElementById('proj_theta').value) || 0,
+                g: parseFloat(document.getElementById('proj_g').value) || 9.8
+            };
+            endpoint = '/api/projectile';
+            break;
+        case 'circular':
+            inputs = {
+                v: parseFloat(document.getElementById('circ_v').value) || 0,
+                r: parseFloat(document.getElementById('circ_r').value) || 0,
+                m: parseFloat(document.getElementById('circ_m').value) || 0,
+                g: parseFloat(document.getElementById('circ_g').value) || 9.8
+            };
+            endpoint = '/api/circular';
+            break;
     }
     
     try {
@@ -240,7 +257,9 @@ function displayResults(module, results) {
         'work_energy': 'we',
         'momentum': 'mom',
         'electricity': 'elec',
-        'vectors': 'vec'
+        'vectors': 'vec',
+        'projectile': 'proj',
+        'circular': 'circ'
     };
     
     const modulePrefix = prefixMap[module];
@@ -311,6 +330,19 @@ function getInputsForModule(module) {
                 y: parseFloat(document.getElementById('vec_mag_y').value) || 0,
                 z: parseFloat(document.getElementById('vec_mag_z').value) || 0
             };
+        case 'projectile':
+            return {
+                v0: parseFloat(document.getElementById('proj_v0').value) || 0,
+                theta: parseFloat(document.getElementById('proj_theta').value) || 0,
+                g: parseFloat(document.getElementById('proj_g').value) || 9.8
+            };
+        case 'circular':
+            return {
+                v: parseFloat(document.getElementById('circ_v').value) || 0,
+                r: parseFloat(document.getElementById('circ_r').value) || 0,
+                m: parseFloat(document.getElementById('circ_m').value) || 0,
+                g: parseFloat(document.getElementById('circ_g').value) || 9.8
+            };
         default:
             return {};
     }
@@ -324,7 +356,9 @@ function generateGraph(module, results, inputs) {
         'work_energy': 'we',
         'momentum': 'mom',
         'electricity': 'elec',
-        'vectors': 'vec'
+        'vectors': 'vec',
+        'projectile': 'proj',
+        'circular': 'circ'
     };
     
     const modulePrefix = prefixMap[module];
@@ -439,6 +473,47 @@ function generateGraph(module, results, inputs) {
             layout.title += ` | Magnitude: ${mag.toFixed(2)}`;
             layout.xaxis.title = 'X Component';
             layout.yaxis.title = 'Y Component';
+            break;
+            
+        case 'projectile':
+            if (inputs.v0 > 0 && inputs.theta >= 0) {
+                const theta_rad = inputs.theta * Math.PI / 180;
+                const t_flight = (2 * inputs.v0 * Math.sin(theta_rad)) / inputs.g;
+                const range = (inputs.v0 * inputs.v0 * Math.sin(2 * theta_rad)) / inputs.g;
+                const max_height = (inputs.v0 * inputs.v0 * Math.sin(theta_rad) * Math.sin(theta_rad)) / (2 * inputs.g);
+                
+                const times = Array.from({length: 100}, (_, i) => i * t_flight / 100);
+                const x = times.map(t => inputs.v0 * Math.cos(theta_rad) * t);
+                const y = times.map(t => inputs.v0 * Math.sin(theta_rad) * t - 0.5 * inputs.g * t * t);
+                
+                data = [
+                    { x: x, y: y, name: 'Trajectory', type: 'scatter', mode: 'lines', line: { color: '#64b5f6', width: 3 }, fill: 'tozeroy', fillcolor: 'rgba(100, 181, 246, 0.15)' },
+                    { x: [range], y: [0], name: 'Landing', type: 'scatter', mode: 'markers', marker: { size: 10, color: '#ff5722', symbol: 'star' } }
+                ];
+                layout.xaxis.title = 'Distance (m)';
+                layout.yaxis.title = 'Height (m)';
+                layout.title = `Projectile Motion | Range: ${range.toFixed(2)} m | Max Height: ${max_height.toFixed(2)} m`;
+            }
+            break;
+            
+        case 'circular':
+            if (inputs.v > 0 && inputs.r > 0) {
+                const angles = Array.from({length: 100}, (_, i) => i * 2 * Math.PI / 100);
+                const x = angles.map(a => inputs.r * Math.cos(a));
+                const y = angles.map(a => inputs.r * Math.sin(a));
+                const period = (2 * Math.PI * inputs.r) / inputs.v;
+                const centripetal = (inputs.v * inputs.v) / inputs.r;
+                
+                data = [
+                    { x: x, y: y, name: 'Circular Path', type: 'scatter', mode: 'lines', line: { color: '#ba68c8', width: 3 }, fill: 'toself', fillcolor: 'rgba(186, 104, 200, 0.1)' },
+                    { x: [0], y: [0], name: 'Center', type: 'scatter', mode: 'markers', marker: { size: 10, color: '#ff9800', symbol: 'diamond' } }
+                ];
+                layout.xaxis.title = 'X (m)';
+                layout.yaxis.title = 'Y (m)';
+                layout.title = `Circular Motion | Period: ${period.toFixed(3)} s | Centripetal Accel: ${centripetal.toFixed(2)} m/s²`;
+                layout.xaxis.scaleanchor = 'y';
+                layout.yaxis.scaleanchor = 'x';
+            }
             break;
     }
     

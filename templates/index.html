@@ -38,6 +38,15 @@
                 <button class="nav-btn" data-emoji="💫" onclick="loadModule('momentum')">💫 Momentum</button>
                 <button class="nav-btn" data-emoji="🔌" onclick="loadModule('electricity')">🔌 Electricity</button>
                 <button class="nav-btn" data-emoji="➡️" onclick="loadModule('vectors')">➡️ Vectors</button>
+                <button class="nav-btn" data-emoji="🚀" onclick="loadModule('projectile')">🚀 Projectile</button>
+                <button class="nav-btn" data-emoji="🔄" onclick="loadModule('circular')">🔄 Circular</button>
+            </div>
+            
+            <div class="nav-section">
+                <h3>Tools</h3>
+                <button class="nav-btn secondary" onclick="showHistory()">📊 History</button>
+                <button class="nav-btn secondary" onclick="showFormulas()">📋 Formulas</button>
+                <button class="nav-btn secondary" onclick="clearHistory()">🗑️ Clear History</button>
             </div>
         </nav>
 
@@ -361,6 +370,60 @@
                 <button class="btn-calculate" onclick="calculate('vectors')">Calculate</button>
                 <div id="vec_results" class="results-section"></div>
                 <div id="vec_graph" class="graph-container"></div>
+            </div>
+
+            <!-- Projectile Motion Module -->
+            <div id="projectile" class="module-view">
+                <h2>🚀 Projectile Motion</h2>
+                <p class="module-desc">Analyze projectile motion with initial velocity and angle:</p>
+                
+                <div class="calculator-grid">
+                    <div class="input-group">
+                        <label>Initial Velocity (v0) m/s</label>
+                        <input type="number" id="proj_v0" placeholder="0" step="0.1">
+                    </div>
+                    <div class="input-group">
+                        <label>Launch Angle (θ) degrees</label>
+                        <input type="number" id="proj_theta" placeholder="0" step="0.1" min="0" max="90">
+                    </div>
+                    <div class="input-group">
+                        <label>Gravity (g) m/s²</label>
+                        <input type="number" id="proj_g" placeholder="9.8" step="0.1" value="9.8">
+                    </div>
+                </div>
+                
+                <button class="btn-calculate" onclick="calculate('projectile')">Calculate</button>
+                <div id="proj_results" class="results-section"></div>
+                <div id="proj_graph" class="graph-container"></div>
+            </div>
+
+            <!-- Circular Motion Module -->
+            <div id="circular" class="module-view">
+                <h2>🔄 Circular Motion</h2>
+                <p class="module-desc">Analyze circular motion with velocity and radius:</p>
+                
+                <div class="calculator-grid">
+                    <div class="input-group">
+                        <label>Velocity (v) m/s</label>
+                        <input type="number" id="circ_v" placeholder="0" step="0.1">
+                    </div>
+                    <div class="input-group">
+                        <label>Radius (r) m</label>
+                        <input type="number" id="circ_r" placeholder="0" step="0.1">
+                    </div>
+                    <div class="input-group">
+                        <label>Mass (m) kg</label>
+                        <input type="number" id="circ_m" placeholder="0" step="0.1">
+                    </div>
+                    <div class="input-group">
+                        <label>Gravity (g) m/s²</label>
+                        <input type="number" id="circ_g" placeholder="9.8" step="0.1" value="9.8">
+                    </div>
+                </div>
+                
+                <button class="btn-calculate" onclick="calculate('circular')">Calculate</button>
+                <div id="circ_results" class="results-section"></div>
+                <div id="circ_graph" class="graph-container"></div>
             </div>
         </main>
     </div>

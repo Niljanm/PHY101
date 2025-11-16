@@ -14,6 +14,8 @@ from modules.work_energy import WorkEnergy
 from modules.momentum import Momentum
 from modules.electricity import Electricity
 from modules.vectors import Vectors
+from modules.projectile_motion import ProjectileMotion
+from modules.circular_motion import CircularMotion
 
 app = Flask(__name__)
 app.config['JSON_SORT_KEYS'] = False
@@ -181,6 +183,37 @@ def vectors():
             results = {}
         
         save_to_history('Vectors', data, results)
+        return jsonify({'success': True, 'data': results})
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)})
+
+# ==================== PROJECTILE MOTION ====================
+@app.route('/api/projectile', methods=['POST'])
+def projectile():
+    try:
+        data = request.json
+        v0 = float(data.get('v0', 0))
+        theta = float(data.get('theta', 0))
+        g = float(data.get('g', 9.8))
+        
+        results = ProjectileMotion.calculate(v0=v0, theta=theta, g=g)
+        save_to_history('Projectile Motion', data, results)
+        return jsonify({'success': True, 'data': results})
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)})
+
+# ==================== CIRCULAR MOTION ====================
+@app.route('/api/circular', methods=['POST'])
+def circular():
+    try:
+        data = request.json
+        v = float(data.get('v', 0))
+        r = float(data.get('r', 0))
+        m = float(data.get('m', 0))
+        g = float(data.get('g', 9.8))
+        
+        results = CircularMotion.calculate(v=v, r=r, m=m, g=g)
+        save_to_history('Circular Motion', data, results)
         return jsonify({'success': True, 'data': results})
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)})
