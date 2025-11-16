@@ -240,6 +240,10 @@ body {
     min-height: 30px;
 }
 
+.sidebar.collapsed .theme-toggle {
+    display: none;
+}
+
 .header-buttons {
     display: flex;
     gap: 5px;
@@ -1100,7 +1104,7 @@ body {
         left: 0;
         right: 0;
         width: 100vw;
-        height: calc(100vh - 60px);
+        height: auto;
         max-height: calc(100vh - 60px);
         flex-wrap: wrap;
         flex-direction: column;
