@@ -637,9 +637,16 @@ async function calculateCalc() {
 async function loadHistory() {
     try {
         const response = await fetch('/api/history');
-        history = await response.json();
+        if (!response.ok) {
+            console.error('Failed to load history:', response.status);
+            history = [];
+            return;
+        }
+        const data = await response.json();
+        history = Array.isArray(data) ? data : [];
     } catch (error) {
         console.error('Error loading history:', error);
+        history = [];
     }
 }
 
@@ -647,18 +654,23 @@ function showHistory() {
     const modal = document.getElementById('historyModal');
     const content = document.getElementById('historyContent');
     
-    if (history.length === 0) {
+    if (!history || history.length === 0) {
         content.innerHTML = '<p>No calculations yet.</p>';
     } else {
         let html = '';
-        for (const calc of history.slice().reverse()) {
+        const historyToShow = Array.isArray(history) ? history : [];
+        for (const calc of historyToShow.slice().reverse()) {
+            const timestamp = calc.timestamp || 'N/A';
+            const module = calc.module || 'Unknown';
+            const inputs = calc.inputs ? JSON.stringify(calc.inputs) : '{}';
+            const outputs = calc.outputs ? JSON.stringify(calc.outputs) : '{}';
             html += `<div class="formula-item">
-                        <h4>[${calc.timestamp}] ${calc.module}</h4>
-                        <p><strong>Inputs:</strong> ${JSON.stringify(calc.inputs)}</p>
-                        <p><strong>Results:</strong> ${JSON.stringify(calc.outputs)}</p>
+                        <h4>[${timestamp}] ${module}</h4>
+                        <p><strong>Inputs:</strong> ${inputs}</p>
+                        <p><strong>Results:</strong> ${outputs}</p>
                     </div>`;
         }
-        content.innerHTML = html;
+        content.innerHTML = html || '<p>No calculations yet.</p>';
     }
     
     modal.classList.remove('hidden');
