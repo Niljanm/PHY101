@@ -318,12 +318,15 @@ function generateGraph(module, results, inputs) {
     let data = [];
     let layout = {
         title: `${module.charAt(0).toUpperCase() + module.slice(1)} Analysis`,
-        xaxis: { title: 'Variable' },
-        yaxis: { title: 'Value' },
+        xaxis: { title: 'Variable', gridcolor: '#333333', showgrid: true },
+        yaxis: { title: 'Value', gridcolor: '#333333', showgrid: true },
         plot_bgcolor: '#1a1a1a',
         paper_bgcolor: '#0f0f0f',
-        font: { color: '#ffffff' },
-        margin: { l: 60, r: 40, t: 60, b: 60 }
+        font: { color: '#ffffff', family: 'Arial, sans-serif', size: 12 },
+        margin: { l: 80, r: 80, t: 80, b: 70 },
+        legend: { x: 0.02, y: 0.98, bgcolor: 'rgba(31, 31, 31, 0.8)', bordercolor: '#555', borderwidth: 1 },
+        hovermode: 'x unified',
+        showlegend: true
     };
     
     switch(module) {
@@ -332,12 +335,15 @@ function generateGraph(module, results, inputs) {
                 const times = Array.from({length: 50}, (_, i) => i * inputs.t / 50);
                 const velocities = times.map(t => inputs.u + inputs.a * t);
                 const displacements = times.map(t => inputs.u * t + 0.5 * inputs.a * t * t);
+                const finalVel = inputs.u + inputs.a * inputs.t;
+                const finalDisp = inputs.u * inputs.t + 0.5 * inputs.a * inputs.t * inputs.t;
                 
                 data = [
-                    { x: times, y: velocities, name: 'Velocity', type: 'scatter', mode: 'lines', line: { color: '#90caf9', width: 3 } },
-                    { x: times, y: displacements, name: 'Displacement', type: 'scatter', mode: 'lines', line: { color: '#ff9800', width: 3 }, yaxis: 'y2' }
+                    { x: times, y: velocities, name: 'Velocity (m/s)', type: 'scatter', mode: 'lines', line: { color: '#90caf9', width: 3 }, fill: 'tozeroy', fillcolor: 'rgba(144, 202, 249, 0.2)' },
+                    { x: times, y: displacements, name: 'Displacement (m)', type: 'scatter', mode: 'lines', line: { color: '#ff9800', width: 3 }, yaxis: 'y2', fill: 'tozeroy', fillcolor: 'rgba(255, 152, 0, 0.2)' }
                 ];
-                layout.yaxis2 = { title: 'Displacement (m)', overlaying: 'y', side: 'right' };
+                layout.yaxis2 = { title: 'Displacement (m)', overlaying: 'y', side: 'right', gridcolor: 'rgba(255, 152, 0, 0.2)' };
+                layout.title += ` | Final Velocity: ${finalVel.toFixed(2)} m/s | Displacement: ${finalDisp.toFixed(2)} m`;
             }
             layout.xaxis.title = 'Time (s)';
             layout.yaxis.title = 'Velocity (m/s)';
@@ -350,10 +356,11 @@ function generateGraph(module, results, inputs) {
                 const powers = currents.map(I => I * I * inputs.R);
                 
                 data = [
-                    { x: currents, y: voltages, name: 'V-I Characteristic', type: 'scatter', mode: 'lines', line: { color: '#64b5f6', width: 3 } },
-                    { x: currents, y: powers, name: 'Power', type: 'scatter', mode: 'lines', line: { color: '#ef5350', width: 3 }, yaxis: 'y2' }
+                    { x: currents, y: voltages, name: 'Voltage (V)', type: 'scatter', mode: 'lines', line: { color: '#64b5f6', width: 3 }, fill: 'tozeroy', fillcolor: 'rgba(100, 181, 246, 0.2)' },
+                    { x: currents, y: powers, name: 'Power (W)', type: 'scatter', mode: 'lines', line: { color: '#ef5350', width: 3 }, yaxis: 'y2', fill: 'tozeroy', fillcolor: 'rgba(239, 83, 80, 0.2)' }
                 ];
-                layout.yaxis2 = { title: 'Power (W)', overlaying: 'y', side: 'right' };
+                layout.yaxis2 = { title: 'Power (W)', overlaying: 'y', side: 'right', gridcolor: 'rgba(239, 83, 80, 0.2)' };
+                layout.title += ` | Resistance: ${inputs.R.toFixed(2)} Ω`;
             }
             layout.xaxis.title = 'Current (A)';
             layout.yaxis.title = 'Voltage (V)';
@@ -365,13 +372,16 @@ function generateGraph(module, results, inputs) {
                 const velocities = Array.from({length: 50}, (_, i) => i * 20 / 50);
                 const PE = heights.map(h => inputs.m * inputs.g * h);
                 const KE = velocities.map(v => 0.5 * inputs.m * v * v);
+                const maxPE = inputs.m * inputs.g * inputs.h;
+                const maxKE = 0.5 * inputs.m * 400;
                 
                 data = [
-                    { x: heights, y: PE, name: 'Potential Energy', type: 'scatter', mode: 'lines', line: { color: '#81c784', width: 3 } },
-                    { x: velocities, y: KE, name: 'Kinetic Energy', type: 'scatter', mode: 'lines', line: { color: '#ff7043', width: 3 } }
+                    { x: heights, y: PE, name: 'Potential Energy (J)', type: 'scatter', mode: 'lines', line: { color: '#81c784', width: 3 }, fill: 'tozeroy', fillcolor: 'rgba(129, 199, 132, 0.2)' },
+                    { x: velocities, y: KE, name: 'Kinetic Energy (J)', type: 'scatter', mode: 'lines', line: { color: '#ff7043', width: 3 }, fill: 'tozeroy', fillcolor: 'rgba(255, 112, 67, 0.2)' }
                 ];
-                layout.xaxis.title = 'Height / Velocity';
+                layout.xaxis.title = 'Height (m) / Velocity (m/s)';
                 layout.yaxis.title = 'Energy (J)';
+                layout.title += ` | Max PE: ${maxPE.toFixed(2)} J | Max KE: ${maxKE.toFixed(2)} J`;
             }
             break;
             
@@ -379,16 +389,19 @@ function generateGraph(module, results, inputs) {
             if (inputs.v0 > 0 && inputs.theta >= 0) {
                 const theta_rad = inputs.theta * Math.PI / 180;
                 const t_flight = 2 * inputs.v0 * Math.sin(theta_rad) / inputs.g;
+                const range = inputs.v0 * inputs.v0 * Math.sin(2 * theta_rad) / inputs.g;
+                const maxHeight = (inputs.v0 * inputs.v0 * Math.sin(theta_rad) * Math.sin(theta_rad)) / (2 * inputs.g);
                 const times = Array.from({length: 100}, (_, i) => i * t_flight / 100);
                 const x = times.map(t => inputs.v0 * Math.cos(theta_rad) * t);
                 const y = times.map(t => inputs.v0 * Math.sin(theta_rad) * t - 0.5 * inputs.g * t * t);
                 
                 data = [
-                    { x: x, y: y, name: 'Trajectory', type: 'scatter', mode: 'lines+markers', line: { color: '#64b5f6', width: 3 }, marker: { size: 4 } }
+                    { x: x, y: y, name: 'Trajectory', type: 'scatter', mode: 'lines+markers', line: { color: '#64b5f6', width: 3 }, marker: { size: 4 }, fill: 'tozeroy', fillcolor: 'rgba(100, 181, 246, 0.15)' },
+                    { x: [range], y: [0], name: 'Landing Point', type: 'scatter', mode: 'markers', marker: { size: 10, color: '#ff5722', symbol: 'star' } }
                 ];
                 layout.xaxis.title = 'Horizontal Distance (m)';
                 layout.yaxis.title = 'Height (m)';
-                layout.title = 'Projectile Trajectory';
+                layout.title = `Projectile Trajectory | Range: ${range.toFixed(2)} m | Max Height: ${maxHeight.toFixed(2)} m`;
             }
             break;
             
@@ -397,14 +410,19 @@ function generateGraph(module, results, inputs) {
                 const angles = Array.from({length: 100}, (_, i) => i * 2 * Math.PI / 100);
                 const x = angles.map(a => inputs.r * Math.cos(a));
                 const y = angles.map(a => inputs.r * Math.sin(a));
+                const period = 2 * Math.PI * inputs.r / inputs.v;
+                const frequency = inputs.v / (2 * Math.PI * inputs.r);
+                const centripetal = inputs.v * inputs.v / inputs.r;
                 
                 data = [
-                    { x: x, y: y, name: 'Circular Path', type: 'scatter', mode: 'lines', line: { color: '#ba68c8', width: 2 } },
-                    { x: [0], y: [0], name: 'Center', type: 'scatter', mode: 'markers', marker: { size: 8, color: '#ff9800' } }
+                    { x: x, y: y, name: 'Circular Path', type: 'scatter', mode: 'lines', line: { color: '#ba68c8', width: 3 }, fill: 'toself', fillcolor: 'rgba(186, 104, 200, 0.1)' },
+                    { x: [0], y: [0], name: 'Center', type: 'scatter', mode: 'markers', marker: { size: 10, color: '#ff9800', symbol: 'diamond' } }
                 ];
                 layout.xaxis.title = 'X (m)';
                 layout.yaxis.title = 'Y (m)';
-                layout.title = 'Circular Motion Path';
+                layout.title = `Circular Motion | Radius: ${inputs.r.toFixed(2)} m | Period: ${period.toFixed(3)} s | Centripetal Accel: ${centripetal.toFixed(2)} m/s²`;
+                layout.xaxis.scaleanchor = 'y';
+                layout.yaxis.scaleanchor = 'x';
             }
             break;
             
@@ -412,16 +430,18 @@ function generateGraph(module, results, inputs) {
             if (inputs.m > 0 && inputs.k > 0 && inputs.A > 0) {
                 const omega = Math.sqrt(inputs.k / inputs.m);
                 const period = 2 * Math.PI / omega;
+                const frequency = 1 / period;
                 const times = Array.from({length: 200}, (_, i) => i * 3 * period / 200);
                 const displacement = times.map(t => inputs.A * Math.sin(omega * t));
                 const velocity = times.map(t => inputs.A * omega * Math.cos(omega * t));
+                const maxVel = inputs.A * omega;
                 
                 data = [
-                    { x: times, y: displacement, name: 'Displacement', type: 'scatter', mode: 'lines', line: { color: '#29b6f6', width: 3 } },
-                    { x: times, y: velocity, name: 'Velocity', type: 'scatter', mode: 'lines', line: { color: '#ffa726', width: 3 }, yaxis: 'y2' }
+                    { x: times, y: displacement, name: 'Displacement (m)', type: 'scatter', mode: 'lines', line: { color: '#29b6f6', width: 3 }, fill: 'tozeroy', fillcolor: 'rgba(41, 182, 246, 0.2)' },
+                    { x: times, y: velocity, name: 'Velocity (m/s)', type: 'scatter', mode: 'lines', line: { color: '#ffa726', width: 3 }, yaxis: 'y2', fill: 'tozeroy', fillcolor: 'rgba(255, 167, 38, 0.2)' }
                 ];
-                layout.yaxis2 = { title: 'Velocity (m/s)', overlaying: 'y', side: 'right' };
-                layout.title = 'Simple Harmonic Motion';
+                layout.yaxis2 = { title: 'Velocity (m/s)', overlaying: 'y', side: 'right', gridcolor: 'rgba(255, 167, 38, 0.2)' };
+                layout.title = `Simple Harmonic Motion | Period: ${period.toFixed(3)} s | Frequency: ${frequency.toFixed(2)} Hz | Max Velocity: ${maxVel.toFixed(2)} m/s`;
             }
             layout.xaxis.title = 'Time (s)';
             layout.yaxis.title = 'Displacement (m)';
@@ -431,13 +451,14 @@ function generateGraph(module, results, inputs) {
             if (inputs.m1 > 0 && inputs.v1 > 0) {
                 const masses = Array.from({length: 50}, (_, i) => (i + 1) * inputs.m1 / 50);
                 const momenta = masses.map(m => m * inputs.v1);
+                const totalMomentum = inputs.m1 * inputs.v1;
                 
                 data = [
-                    { x: masses, y: momenta, name: 'Momentum', type: 'scatter', mode: 'lines', line: { color: '#4dd0e1', width: 3 } }
+                    { x: masses, y: momenta, name: 'Momentum (kg·m/s)', type: 'scatter', mode: 'lines+markers', line: { color: '#4dd0e1', width: 3 }, marker: { size: 5 }, fill: 'tozeroy', fillcolor: 'rgba(77, 208, 225, 0.2)' }
                 ];
                 layout.xaxis.title = 'Mass (kg)';
                 layout.yaxis.title = 'Momentum (kg·m/s)';
-                layout.title = 'Momentum Analysis';
+                layout.title += ` | Total Momentum: ${totalMomentum.toFixed(2)} kg·m/s`;
             }
             break;
             
@@ -448,13 +469,13 @@ function generateGraph(module, results, inputs) {
                 const magnifications = distances.map((u, idx) => -(imageDistances[idx] / u));
                 
                 data = [
-                    { x: distances, y: imageDistances, name: 'Image Distance', type: 'scatter', mode: 'lines', line: { color: '#4dd0e1', width: 3 } },
-                    { x: distances, y: magnifications, name: 'Magnification', type: 'scatter', mode: 'lines', line: { color: '#ffb74d', width: 3 }, yaxis: 'y2' }
+                    { x: distances, y: imageDistances, name: 'Image Distance (m)', type: 'scatter', mode: 'lines', line: { color: '#4dd0e1', width: 3 }, fill: 'tozeroy', fillcolor: 'rgba(77, 208, 225, 0.2)' },
+                    { x: distances, y: magnifications, name: 'Magnification', type: 'scatter', mode: 'lines', line: { color: '#ffb74d', width: 3 }, yaxis: 'y2', fill: 'tozeroy', fillcolor: 'rgba(255, 183, 77, 0.2)' }
                 ];
-                layout.yaxis2 = { title: 'Magnification', overlaying: 'y', side: 'right' };
+                layout.yaxis2 = { title: 'Magnification', overlaying: 'y', side: 'right', gridcolor: 'rgba(255, 183, 77, 0.2)' };
                 layout.xaxis.title = 'Object Distance (m)';
                 layout.yaxis.title = 'Image Distance (m)';
-                layout.title = 'Optics Analysis';
+                layout.title += ` | Focal Length: ${inputs.f.toFixed(2)} m`;
             }
             break;
             
@@ -462,13 +483,14 @@ function generateGraph(module, results, inputs) {
             if (inputs.m > 0 && inputs.c > 0) {
                 const tempChanges = Array.from({length: 50}, (_, i) => i * (inputs.delta_t > 0 ? inputs.delta_t : 100) / 50);
                 const heat = tempChanges.map(dt => inputs.m * inputs.c * dt);
+                const totalHeat = inputs.m * inputs.c * (inputs.delta_t > 0 ? inputs.delta_t : 100);
                 
                 data = [
-                    { x: tempChanges, y: heat, name: 'Heat Energy', type: 'scatter', mode: 'lines', line: { color: '#ef5350', width: 3 } }
+                    { x: tempChanges, y: heat, name: 'Heat Energy (J)', type: 'scatter', mode: 'lines+markers', line: { color: '#ef5350', width: 3 }, marker: { size: 5 }, fill: 'tozeroy', fillcolor: 'rgba(239, 83, 80, 0.2)' }
                 ];
                 layout.xaxis.title = 'Temperature Change (°C)';
                 layout.yaxis.title = 'Heat Energy (J)';
-                layout.title = 'Thermodynamics Analysis';
+                layout.title += ` | Specific Heat Capacity: ${inputs.c.toFixed(2)} J/(kg·°C) | Total Heat: ${totalHeat.toFixed(2)} J`;
             }
             break;
             
@@ -477,20 +499,21 @@ function generateGraph(module, results, inputs) {
                 const distances = Array.from({length: 50}, (_, i) => (i + 1) * inputs.r / 50);
                 const k = 8.99e9;
                 const forces = distances.map(r => Math.abs((k * inputs.q1 * inputs.q2) / (r * r)));
+                const forceAtR = Math.abs((k * inputs.q1 * inputs.q2) / (inputs.r * inputs.r));
                 
                 data = [
-                    { x: distances, y: forces, name: 'Coulomb Force', type: 'scatter', mode: 'lines', line: { color: '#ce93d8', width: 3 } }
+                    { x: distances, y: forces, name: 'Coulomb Force (N)', type: 'scatter', mode: 'lines', line: { color: '#ce93d8', width: 3 }, fill: 'tozeroy', fillcolor: 'rgba(206, 147, 216, 0.2)' }
                 ];
                 layout.xaxis.title = 'Distance (m)';
                 layout.yaxis.title = 'Force (N)';
-                layout.title = 'Electrostatics Analysis';
+                layout.title += ` | Force @ ${inputs.r.toFixed(2)} m: ${forceAtR.toFixed(2)} N`;
             }
             break;
     }
     
     if (data.length > 0) {
         graphDiv.style.display = 'block';
-        Plotly.newPlot(graphDiv, data, layout, { responsive: true });
+        Plotly.newPlot(graphDiv, data, layout, { responsive: true, displayModeBar: true });
     }
 }
 
