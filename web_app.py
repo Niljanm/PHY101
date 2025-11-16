@@ -18,25 +18,40 @@ HISTORY_FILE = Path('data/history.json')
 
 def load_history():
     """Load calculation history"""
-    if HISTORY_FILE.exists():
-        with open(HISTORY_FILE, 'r') as f:
-            return json.load(f)
+    try:
+        if HISTORY_FILE.exists():
+            with open(HISTORY_FILE, 'r') as f:
+                return json.load(f)
+    except (OSError, IOError):
+        # Silently fail on read-only filesystem (Vercel)
+        pass
     return []
 
 def save_to_history(module, inputs, outputs):
     """Save calculation to history"""
-    history = load_history()
-    entry = {
-        'timestamp': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
-        'module': module,
-        'inputs': inputs,
-        'outputs': outputs
-    }
-    history.append(entry)
-    HISTORY_FILE.parent.mkdir(parents=True, exist_ok=True)
-    with open(HISTORY_FILE, 'w') as f:
-        json.dump(history, f, indent=2)
-    return entry
+    try:
+        history = load_history()
+        entry = {
+            'timestamp': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+            'module': module,
+            'inputs': inputs,
+            'outputs': outputs
+        }
+        history.append(entry)
+        HISTORY_FILE.parent.mkdir(parents=True, exist_ok=True)
+        with open(HISTORY_FILE, 'w') as f:
+            json.dump(history, f, indent=2)
+        return entry
+    except (OSError, IOError):
+        # Silently fail on read-only filesystem (Vercel)
+        # Return the entry anyway so calculations still work
+        entry = {
+            'timestamp': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+            'module': module,
+            'inputs': inputs,
+            'outputs': outputs
+        }
+        return entry
 
 # ==================== KINEMATICS ====================
 @app.route('/api/kinematics', methods=['POST'])
@@ -364,12 +379,19 @@ def converter():
 # ==================== HISTORY ====================
 @app.route('/api/history', methods=['GET'])
 def get_history():
-    return jsonify(load_history())
+    try:
+        return jsonify(load_history())
+    except Exception as e:
+        return jsonify([])
 
 @app.route('/api/history/clear', methods=['POST'])
 def clear_history():
-    HISTORY_FILE.write_text('[]')
-    return jsonify({'status': 'cleared'})
+    try:
+        HISTORY_FILE.write_text('[]')
+        return jsonify({'status': 'cleared'})
+    except (OSError, IOError):
+        # Silently fail on read-only filesystem
+        return jsonify({'status': 'cleared'})
 
 # ==================== PAGE ROUTES ====================
 @app.route('/')
