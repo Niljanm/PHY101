@@ -115,22 +115,25 @@ async function calculate(module) {
             };
             endpoint = '/api/kinematics';
             break;
-        case 'ohms':
+        case 'freefall':
             inputs = {
-                V: parseFloat(document.getElementById('ohm_V').value) || 0,
-                I: parseFloat(document.getElementById('ohm_I').value) || 0,
-                R: parseFloat(document.getElementById('ohm_R').value) || 0
+                h: parseFloat(document.getElementById('ff_h').value) || 0,
+                v0: parseFloat(document.getElementById('ff_v0').value) || 0,
+                t: parseFloat(document.getElementById('ff_t').value) || 0,
+                g: parseFloat(document.getElementById('ff_g').value) || 9.8
             };
-            endpoint = '/api/ohms-law';
+            endpoint = '/api/freefall';
             break;
-        case 'energy':
+        case 'work_energy':
             inputs = {
-                m: parseFloat(document.getElementById('ener_m').value) || 0,
-                v: parseFloat(document.getElementById('ener_v').value) || 0,
-                h: parseFloat(document.getElementById('ener_h').value) || 0,
-                g: parseFloat(document.getElementById('ener_g').value) || 9.8
+                force: parseFloat(document.getElementById('we_force').value) || 0,
+                distance: parseFloat(document.getElementById('we_distance').value) || 0,
+                mass: parseFloat(document.getElementById('we_mass').value) || 0,
+                velocity: parseFloat(document.getElementById('we_velocity').value) || 0,
+                height: parseFloat(document.getElementById('we_height').value) || 0,
+                g: parseFloat(document.getElementById('we_g').value) || 9.8
             };
-            endpoint = '/api/energy';
+            endpoint = '/api/work_energy';
             break;
         case 'momentum':
             inputs = {
@@ -141,54 +144,66 @@ async function calculate(module) {
             };
             endpoint = '/api/momentum';
             break;
-        case 'optics':
-            inputs = {
-                f: parseFloat(document.getElementById('opt_f').value) || 0,
-                u: parseFloat(document.getElementById('opt_u').value) || 0,
-                v: parseFloat(document.getElementById('opt_v').value) || 0
-            };
-            endpoint = '/api/optics';
+        case 'electricity':
+            // Check which tab is active
+            const ohmTab = document.getElementById('electricity_ohms_tab');
+            if (ohmTab && ohmTab.classList.contains('active')) {
+                inputs = {
+                    type: 'ohms',
+                    V: parseFloat(document.getElementById('elec_V').value) || 0,
+                    I: parseFloat(document.getElementById('elec_I').value) || 0,
+                    R: parseFloat(document.getElementById('elec_R').value) || 0
+                };
+            } else {
+                inputs = {
+                    type: 'coulombs',
+                    q1: parseFloat(document.getElementById('elec_q1').value) || 0,
+                    q2: parseFloat(document.getElementById('elec_q2').value) || 0,
+                    r: parseFloat(document.getElementById('elec_r').value) || 0,
+                    k: parseFloat(document.getElementById('elec_k').value) || 8.99e9
+                };
+            }
+            endpoint = '/api/electricity';
             break;
-        case 'thermo':
-            inputs = {
-                m: parseFloat(document.getElementById('therm_m').value) || 0,
-                c: parseFloat(document.getElementById('therm_c').value) || 0,
-                delta_t: parseFloat(document.getElementById('therm_dt').value) || 0
-            };
-            endpoint = '/api/thermodynamics';
-            break;
-        case 'circular':
-            inputs = {
-                m: parseFloat(document.getElementById('circ_m').value) || 0,
-                v: parseFloat(document.getElementById('circ_v').value) || 0,
-                r: parseFloat(document.getElementById('circ_r').value) || 0,
-                omega: parseFloat(document.getElementById('circ_omega').value) || 0
-            };
-            endpoint = '/api/circular-motion';
-            break;
-        case 'projectile':
-            inputs = {
-                v0: parseFloat(document.getElementById('proj_v0').value) || 0,
-                theta: parseFloat(document.getElementById('proj_theta').value) || 45,
-                g: parseFloat(document.getElementById('proj_g').value) || 9.8
-            };
-            endpoint = '/api/projectile-motion';
-            break;
-        case 'shm':
-            inputs = {
-                m: parseFloat(document.getElementById('shm_m').value) || 0,
-                k: parseFloat(document.getElementById('shm_k').value) || 0,
-                A: parseFloat(document.getElementById('shm_A').value) || 0
-            };
-            endpoint = '/api/shm';
-            break;
-        case 'electrostatics':
-            inputs = {
-                q1: parseFloat(document.getElementById('elec_q1').value) || 0,
-                q2: parseFloat(document.getElementById('elec_q2').value) || 0,
-                r: parseFloat(document.getElementById('elec_r').value) || 0
-            };
-            endpoint = '/api/electrostatics';
+        case 'vectors':
+            // Check which tab is active
+            const magTab = document.getElementById('vectors_magnitude_tab');
+            const addTab = document.getElementById('vectors_addition_tab');
+            const dotTab = document.getElementById('vectors_dot_tab');
+            
+            if (magTab && magTab.classList.contains('active')) {
+                inputs = {
+                    type: 'magnitude',
+                    x: parseFloat(document.getElementById('vec_mag_x').value) || 0,
+                    y: parseFloat(document.getElementById('vec_mag_y').value) || 0,
+                    z: parseFloat(document.getElementById('vec_mag_z').value) || 0
+                };
+            } else if (addTab && addTab.classList.contains('active')) {
+                inputs = {
+                    type: 'addition',
+                    ax: parseFloat(document.getElementById('vec_add_ax').value) || 0,
+                    ay: parseFloat(document.getElementById('vec_add_ay').value) || 0,
+                    bx: parseFloat(document.getElementById('vec_add_bx').value) || 0,
+                    by: parseFloat(document.getElementById('vec_add_by').value) || 0
+                };
+            } else if (dotTab && dotTab.classList.contains('active')) {
+                inputs = {
+                    type: 'dot',
+                    ax: parseFloat(document.getElementById('vec_dot_ax').value) || 0,
+                    ay: parseFloat(document.getElementById('vec_dot_ay').value) || 0,
+                    bx: parseFloat(document.getElementById('vec_dot_bx').value) || 0,
+                    by: parseFloat(document.getElementById('vec_dot_by').value) || 0
+                };
+            } else {
+                inputs = {
+                    type: 'angle',
+                    ax: parseFloat(document.getElementById('vec_angle_ax').value) || 0,
+                    ay: parseFloat(document.getElementById('vec_angle_ay').value) || 0,
+                    bx: parseFloat(document.getElementById('vec_angle_bx').value) || 0,
+                    by: parseFloat(document.getElementById('vec_angle_by').value) || 0
+                };
+            }
+            endpoint = '/api/vectors';
             break;
     }
     
@@ -223,16 +238,11 @@ function displayResults(module, results) {
     // Map module names to result div prefixes
     const prefixMap = {
         'kinematics': 'kin',
-        'ohms': 'ohm',
-        'energy': 'ener',
+        'freefall': 'ff',
+        'work_energy': 'we',
         'momentum': 'mom',
-        'optics': 'opt',
-        'thermo': 'therm',
-        'circular': 'circ',
-        'projectile': 'proj',
-        'shm': 'shm',
-        'electrostatics': 'elec',
-        'calculator': 'calc'
+        'electricity': 'elec',
+        'vectors': 'vec'
     };
     
     const modulePrefix = prefixMap[module];
@@ -270,37 +280,42 @@ function getInputsForModule(module) {
                 a: parseFloat(document.getElementById('kin_a').value) || 0,
                 t: parseFloat(document.getElementById('kin_t').value) || 0
             };
-        case 'ohms':
+        case 'freefall':
             return {
-                V: parseFloat(document.getElementById('ohm_V').value) || 0,
-                I: parseFloat(document.getElementById('ohm_I').value) || 0,
-                R: parseFloat(document.getElementById('ohm_R').value) || 0
+                h: parseFloat(document.getElementById('ff_h').value) || 0,
+                v0: parseFloat(document.getElementById('ff_v0').value) || 0,
+                t: parseFloat(document.getElementById('ff_t').value) || 0,
+                g: parseFloat(document.getElementById('ff_g').value) || 9.8
             };
-        case 'energy':
+        case 'work_energy':
             return {
-                m: parseFloat(document.getElementById('ener_m').value) || 0,
-                v: parseFloat(document.getElementById('ener_v').value) || 0,
-                h: parseFloat(document.getElementById('ener_h').value) || 0,
-                g: parseFloat(document.getElementById('ener_g').value) || 9.8
+                mass: parseFloat(document.getElementById('we_mass').value) || 0,
+                velocity: parseFloat(document.getElementById('we_velocity').value) || 0,
+                height: parseFloat(document.getElementById('we_height').value) || 0,
+                g: parseFloat(document.getElementById('we_g').value) || 9.8
             };
-        case 'projectile':
+        case 'momentum':
             return {
-                v0: parseFloat(document.getElementById('proj_v0').value) || 0,
-                theta: parseFloat(document.getElementById('proj_theta').value) || 45,
-                g: parseFloat(document.getElementById('proj_g').value) || 9.8
+                m1: parseFloat(document.getElementById('mom_m1').value) || 0,
+                v1: parseFloat(document.getElementById('mom_v1').value) || 0,
+                m2: parseFloat(document.getElementById('mom_m2').value) || 0,
+                v2: parseFloat(document.getElementById('mom_v2').value) || 0
             };
-        case 'circular':
+        case 'electricity':
             return {
-                m: parseFloat(document.getElementById('circ_m').value) || 0,
-                v: parseFloat(document.getElementById('circ_v').value) || 0,
-                r: parseFloat(document.getElementById('circ_r').value) || 0
+                V: parseFloat(document.getElementById('elec_V').value) || 0,
+                I: parseFloat(document.getElementById('elec_I').value) || 0,
+                R: parseFloat(document.getElementById('elec_R').value) || 0
             };
-        case 'shm':
+        case 'vectors':
             return {
-                m: parseFloat(document.getElementById('shm_m').value) || 0,
-                k: parseFloat(document.getElementById('shm_k').value) || 0,
-                A: parseFloat(document.getElementById('shm_A').value) || 0
+                x: parseFloat(document.getElementById('vec_mag_x').value) || 0,
+                y: parseFloat(document.getElementById('vec_mag_y').value) || 0,
+                z: parseFloat(document.getElementById('vec_mag_z').value) || 0
             };
+        default:
+            return {};
+    }
         case 'momentum':
             return {
                 m1: parseFloat(document.getElementById('mom_m1').value) || 0,
@@ -554,6 +569,27 @@ function generateGraph(module, results, inputs) {
         graphDiv.style.display = 'block';
         Plotly.newPlot(graphDiv, data, layout, { responsive: true, displayModeBar: true });
     }
+}
+
+// Tab switching for modules with multiple calculation types
+function switchTab(event, module, tabId) {
+    event.preventDefault();
+    
+    // Hide all tabs for this module
+    const tabs = document.querySelectorAll(`#${module} .tab-content`);
+    tabs.forEach(tab => tab.classList.remove('active'));
+    
+    // Deactivate all buttons for this module
+    const buttons = document.querySelectorAll(`#${module} .tab-btn`);
+    buttons.forEach(btn => btn.classList.remove('active'));
+    
+    // Show selected tab and activate button
+    const selectedTab = document.getElementById(`${module}_${tabId}`);
+    if (selectedTab) {
+        selectedTab.classList.add('active');
+    }
+    
+    event.target.classList.add('active');
 }
 
 function formatKey(key) {

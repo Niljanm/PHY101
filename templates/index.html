@@ -33,24 +33,11 @@
                 <h3>Modules</h3>
                 <button class="nav-btn" data-emoji="🏠" onclick="loadModule('home')">🏠 Home</button>
                 <button class="nav-btn" data-emoji="📍" onclick="loadModule('kinematics')">📍 Kinematics</button>
-                <button class="nav-btn" data-emoji="⚡" onclick="loadModule('ohms')">⚡ Ohm's Law</button>
-                <button class="nav-btn" data-emoji="⚡" onclick="loadModule('energy')">⚡ Energy</button>
+                <button class="nav-btn" data-emoji="⬇️" onclick="loadModule('freefall')">⬇️ Freefall</button>
+                <button class="nav-btn" data-emoji="⚡" onclick="loadModule('work_energy')">⚡ Work & Energy</button>
                 <button class="nav-btn" data-emoji="💫" onclick="loadModule('momentum')">💫 Momentum</button>
-                <button class="nav-btn" data-emoji="🔍" onclick="loadModule('optics')">🔍 Optics</button>
-                <button class="nav-btn" data-emoji="🌡️" onclick="loadModule('thermo')">🌡️ Thermodynamics</button>
-                <button class="nav-btn" data-emoji="🔄" onclick="loadModule('circular')">🔄 Circular Motion</button>
-                <button class="nav-btn" data-emoji="🚀" onclick="loadModule('projectile')">🚀 Projectile Motion</button>
-                <button class="nav-btn" data-emoji="〰️" onclick="loadModule('shm')">〰️ Simple Harmonic</button>
-                <button class="nav-btn" data-emoji="⚛️" onclick="loadModule('electrostatics')">⚛️ Electrostatics</button>
-                <button class="nav-btn" data-emoji="🧮" onclick="loadModule('calculator')">🧮 Sci Calculator</button>
-            </div>
-            
-            <div class="nav-section">
-                <h3>Tools</h3>
-                <button class="nav-btn secondary" data-emoji="🔄" onclick="loadModule('converter')">🔄 Unit Converter</button>
-                <button class="nav-btn secondary" data-emoji="📊" onclick="showHistory()">📊 History</button>
-                <button class="nav-btn secondary" data-emoji="📋" onclick="showFormulas()">📋 Formulas</button>
-                <button class="nav-btn secondary" data-emoji="🗑️" onclick="clearHistory()">🗑️ Clear</button>
+                <button class="nav-btn" data-emoji="🔌" onclick="loadModule('electricity')">🔌 Electricity</button>
+                <button class="nav-btn" data-emoji="➡️" onclick="loadModule('vectors')">➡️ Vectors</button>
             </div>
         </nav>
 
@@ -131,58 +118,122 @@
                 <div id="kin_graph" class="graph-container"></div>
             </div>
 
-            <!-- Ohm's Law Module -->
-            <div id="ohms" class="module-view">
-                <h2>⚡ Ohm's Law Calculator</h2>
-                <p class="module-desc">Analyze electrical circuits:</p>
+            <!-- Freefall Dynamics Module -->
+            <div id="freefall" class="module-view">
+                <h2>⬇️ Freefall Dynamics</h2>
+                <p class="module-desc">Analyze objects falling under gravity:</p>
                 
                 <div class="calculator-grid">
-                    <div class="input-group">
-                        <label>Voltage (V) Volts</label>
-                        <input type="number" id="ohm_V" placeholder="0" step="0.1">
-                    </div>
-                    <div class="input-group">
-                        <label>Current (I) Amperes</label>
-                        <input type="number" id="ohm_I" placeholder="0" step="0.1">
-                    </div>
-                    <div class="input-group">
-                        <label>Resistance (R) Ohms</label>
-                        <input type="number" id="ohm_R" placeholder="0" step="0.1">
-                    </div>
-                </div>
-                
-                <button class="btn-calculate" onclick="calculate('ohms')">Calculate</button>
-                <div id="ohm_results" class="results-section"></div>
-                <div id="ohm_graph" class="graph-container"></div>
-            </div>
-
-            <!-- Energy Module -->
-            <div id="energy" class="module-view">
-                <h2>⚡ Energy Calculator</h2>
-                <p class="module-desc">Calculate kinetic and potential energy:</p>
-                
-                <div class="calculator-grid">
-                    <div class="input-group">
-                        <label>Mass (m) kg</label>
-                        <input type="number" id="ener_m" placeholder="0" step="0.1">
-                    </div>
-                    <div class="input-group">
-                        <label>Velocity (v) m/s</label>
-                        <input type="number" id="ener_v" placeholder="0" step="0.1">
-                    </div>
                     <div class="input-group">
                         <label>Height (h) m</label>
-                        <input type="number" id="ener_h" placeholder="0" step="0.1">
+                        <input type="number" id="ff_h" placeholder="0" step="0.1">
+                    </div>
+                    <div class="input-group">
+                        <label>Initial Velocity (v0) m/s</label>
+                        <input type="number" id="ff_v0" placeholder="0" step="0.1">
+                    </div>
+                    <div class="input-group">
+                        <label>Time (t) s</label>
+                        <input type="number" id="ff_t" placeholder="0" step="0.1">
                     </div>
                     <div class="input-group">
                         <label>Gravity (g) m/s²</label>
-                        <input type="number" id="ener_g" placeholder="9.8" step="0.1" value="9.8">
+                        <input type="number" id="ff_g" placeholder="9.8" step="0.1" value="9.8">
                     </div>
                 </div>
                 
-                <button class="btn-calculate" onclick="calculate('energy')">Calculate</button>
-                <div id="ener_results" class="results-section"></div>
-                <div id="ener_graph" class="graph-container"></div>
+                <button class="btn-calculate" onclick="calculate('freefall')">Calculate</button>
+                <div id="ff_results" class="results-section"></div>
+                <div id="ff_graph" class="graph-container"></div>
+            </div>
+
+            <!-- Work and Energy Module -->
+            <div id="work_energy" class="module-view">
+                <h2>⚡ Work and Energy</h2>
+                <p class="module-desc">Calculate work and energy transformations:</p>
+                
+                <div class="calculator-grid">
+                    <div class="input-group">
+                        <label>Force (F) N</label>
+                        <input type="number" id="we_force" placeholder="0" step="0.1">
+                    </div>
+                    <div class="input-group">
+                        <label>Distance (d) m</label>
+                        <input type="number" id="we_distance" placeholder="0" step="0.1">
+                    </div>
+                    <div class="input-group">
+                        <label>Mass (m) kg</label>
+                        <input type="number" id="we_mass" placeholder="0" step="0.1">
+                    </div>
+                    <div class="input-group">
+                        <label>Velocity (v) m/s</label>
+                        <input type="number" id="we_velocity" placeholder="0" step="0.1">
+                    </div>
+                    <div class="input-group">
+                        <label>Height (h) m</label>
+                        <input type="number" id="we_height" placeholder="0" step="0.1">
+                    </div>
+                    <div class="input-group">
+                        <label>Gravity (g) m/s²</label>
+                        <input type="number" id="we_g" placeholder="9.8" step="0.1" value="9.8">
+                    </div>
+                </div>
+                
+                <button class="btn-calculate" onclick="calculate('work_energy')">Calculate</button>
+                <div id="we_results" class="results-section"></div>
+                <div id="we_graph" class="graph-container"></div>
+            </div>
+            <!-- Electricity Module -->
+            <div id="electricity" class="module-view">
+                <h2>🔌 Electricity</h2>
+                <p class="module-desc">Calculate electrical properties:</p>
+                
+                <div class="tab-buttons">
+                    <button class="tab-btn active" onclick="switchTab(event, 'electricity', 'ohms_tab')">Ohm's Law</button>
+                    <button class="tab-btn" onclick="switchTab(event, 'electricity', 'coulombs_tab')">Coulomb's Law</button>
+                </div>
+                
+                <div id="electricity_ohms_tab" class="tab-content active">
+                    <div class="calculator-grid">
+                        <div class="input-group">
+                            <label>Voltage (V) Volts</label>
+                            <input type="number" id="elec_V" placeholder="0" step="0.1">
+                        </div>
+                        <div class="input-group">
+                            <label>Current (I) Amperes</label>
+                            <input type="number" id="elec_I" placeholder="0" step="0.1">
+                        </div>
+                        <div class="input-group">
+                            <label>Resistance (R) Ohms</label>
+                            <input type="number" id="elec_R" placeholder="0" step="0.1">
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="electricity_coulombs_tab" class="tab-content">
+                    <div class="calculator-grid">
+                        <div class="input-group">
+                            <label>Charge 1 (q1) Coulombs</label>
+                            <input type="number" id="elec_q1" placeholder="0" step="0.0001">
+                        </div>
+                        <div class="input-group">
+                            <label>Charge 2 (q2) Coulombs</label>
+                            <input type="number" id="elec_q2" placeholder="0" step="0.0001">
+                        </div>
+                        <div class="input-group">
+                            <label>Distance (r) m</label>
+                            <input type="number" id="elec_r" placeholder="0" step="0.01">
+                        </div>
+                        <div class="input-group">
+                            <label>Coulomb Constant (k) N⋅m²/C²</label>
+                            <input type="number" id="elec_k" placeholder="8.99e9" step="0.01" value="8.99e9">
+                        </div>
+                    </div>
+                </div>
+                
+                <button class="btn-calculate" onclick="calculate('electricity')">Calculate</button>
+                <div id="elec_results" class="results-section"></div>
+                <div id="elec_graph" class="graph-container"></div>
             </div>
 
             <!-- Momentum Module -->
@@ -214,227 +265,102 @@
                 <div id="mom_graph" class="graph-container"></div>
             </div>
 
-            <!-- Optics Module -->
-            <div id="optics" class="module-view">
-                <h2>🔍 Optics Calculator</h2>
-                <p class="module-desc">Analyze lens and mirror systems:</p>
-                
-                <div class="calculator-grid">
-                    <div class="input-group">
-                        <label>Focal Length (f) cm</label>
-                        <input type="number" id="opt_f" placeholder="0" step="0.1">
-                    </div>
-                    <div class="input-group">
-                        <label>Object Distance (u) cm</label>
-                        <input type="number" id="opt_u" placeholder="0" step="0.1">
-                    </div>
-                    <div class="input-group">
-                        <label>Image Distance (v) cm</label>
-                        <input type="number" id="opt_v" placeholder="0" step="0.1">
-                    </div>
-                </div>
-                
-                <button class="btn-calculate" onclick="calculate('optics')">Calculate</button>
-                <div id="opt_results" class="results-section"></div>
-                <div id="opt_graph" class="graph-container"></div>
-            </div>
 
-            <!-- Thermodynamics Module -->
-            <div id="thermo" class="module-view">
-                <h2>🌡️ Thermodynamics Calculator</h2>
-                <p class="module-desc">Calculate heat transfer:</p>
+            <!-- Vectors Module -->
+            <div id="vectors" class="module-view">
+                <h2>➡️ Vectors</h2>
+                <p class="module-desc">Perform vector calculations:</p>
                 
-                <div class="calculator-grid">
-                    <div class="input-group">
-                        <label>Mass (m) kg</label>
-                        <input type="number" id="therm_m" placeholder="0" step="0.1">
-                    </div>
-                    <div class="input-group">
-                        <label>Specific Heat (c) J/kg°C</label>
-                        <input type="number" id="therm_c" placeholder="0" step="0.1">
-                    </div>
-                    <div class="input-group">
-                        <label>Temperature Change (ΔT) °C</label>
-                        <input type="number" id="therm_dt" placeholder="0" step="0.1">
+                <div class="tab-buttons">
+                    <button class="tab-btn active" onclick="switchTab(event, 'vectors', 'magnitude_tab')">Magnitude</button>
+                    <button class="tab-btn" onclick="switchTab(event, 'vectors', 'addition_tab')">Addition</button>
+                    <button class="tab-btn" onclick="switchTab(event, 'vectors', 'dot_tab')">Dot Product</button>
+                    <button class="tab-btn" onclick="switchTab(event, 'vectors', 'angle_tab')">Angle</button>
+                </div>
+                
+                <div id="vectors_magnitude_tab" class="tab-content active">
+                    <div class="calculator-grid">
+                        <div class="input-group">
+                            <label>X Component</label>
+                            <input type="number" id="vec_mag_x" placeholder="0" step="0.1">
+                        </div>
+                        <div class="input-group">
+                            <label>Y Component</label>
+                            <input type="number" id="vec_mag_y" placeholder="0" step="0.1">
+                        </div>
+                        <div class="input-group">
+                            <label>Z Component</label>
+                            <input type="number" id="vec_mag_z" placeholder="0" step="0.1">
+                        </div>
                     </div>
                 </div>
                 
-                <button class="btn-calculate" onclick="calculate('thermo')">Calculate</button>
-                <div id="therm_results" class="results-section"></div>
-                <div id="therm_graph" class="graph-container"></div>
-            </div>
-
-            <!-- Circular Motion Module -->
-            <div id="circular" class="module-view">
-                <h2>🔄 Circular Motion Calculator</h2>
-                <p class="module-desc">Analyze circular motion:</p>
-                
-                <div class="calculator-grid">
-                    <div class="input-group">
-                        <label>Mass (m) kg</label>
-                        <input type="number" id="circ_m" placeholder="0" step="0.1">
-                    </div>
-                    <div class="input-group">
-                        <label>Velocity (v) m/s</label>
-                        <input type="number" id="circ_v" placeholder="0" step="0.1">
-                    </div>
-                    <div class="input-group">
-                        <label>Radius (r) m</label>
-                        <input type="number" id="circ_r" placeholder="0" step="0.1">
-                    </div>
-                    <div class="input-group">
-                        <label>Angular Velocity (ω) rad/s</label>
-                        <input type="number" id="circ_omega" placeholder="0" step="0.1">
+                <div id="vectors_addition_tab" class="tab-content">
+                    <div class="calculator-grid">
+                        <div class="input-group">
+                            <label>Vector A - X</label>
+                            <input type="number" id="vec_add_ax" placeholder="0" step="0.1">
+                        </div>
+                        <div class="input-group">
+                            <label>Vector A - Y</label>
+                            <input type="number" id="vec_add_ay" placeholder="0" step="0.1">
+                        </div>
+                        <div class="input-group">
+                            <label>Vector B - X</label>
+                            <input type="number" id="vec_add_bx" placeholder="0" step="0.1">
+                        </div>
+                        <div class="input-group">
+                            <label>Vector B - Y</label>
+                            <input type="number" id="vec_add_by" placeholder="0" step="0.1">
+                        </div>
                     </div>
                 </div>
                 
-                <button class="btn-calculate" onclick="calculate('circular')">Calculate</button>
-                <div id="circ_results" class="results-section"></div>
-                <div id="circ_graph" class="graph-container"></div>
-            </div>
-
-            <!-- Projectile Motion Module -->
-            <div id="projectile" class="module-view">
-                <h2>🚀 Projectile Motion Calculator</h2>
-                <p class="module-desc">Analyze projectile trajectories:</p>
-                
-                <div class="calculator-grid">
-                    <div class="input-group">
-                        <label>Initial Velocity (v₀) m/s</label>
-                        <input type="number" id="proj_v0" placeholder="0" step="0.1">
-                    </div>
-                    <div class="input-group">
-                        <label>Angle (θ) degrees</label>
-                        <input type="number" id="proj_theta" placeholder="45" step="0.1" value="45">
-                    </div>
-                    <div class="input-group">
-                        <label>Gravity (g) m/s²</label>
-                        <input type="number" id="proj_g" placeholder="9.8" step="0.1" value="9.8">
+                <div id="vectors_dot_tab" class="tab-content">
+                    <div class="calculator-grid">
+                        <div class="input-group">
+                            <label>Vector A - X</label>
+                            <input type="number" id="vec_dot_ax" placeholder="0" step="0.1">
+                        </div>
+                        <div class="input-group">
+                            <label>Vector A - Y</label>
+                            <input type="number" id="vec_dot_ay" placeholder="0" step="0.1">
+                        </div>
+                        <div class="input-group">
+                            <label>Vector B - X</label>
+                            <input type="number" id="vec_dot_bx" placeholder="0" step="0.1">
+                        </div>
+                        <div class="input-group">
+                            <label>Vector B - Y</label>
+                            <input type="number" id="vec_dot_by" placeholder="0" step="0.1">
+                        </div>
                     </div>
                 </div>
                 
-                <button class="btn-calculate" onclick="calculate('projectile')">Calculate</button>
-                <div id="proj_results" class="results-section"></div>
-                <div id="proj_graph" class="graph-container"></div>
-            </div>
-
-            <!-- SHM Module -->
-            <div id="shm" class="module-view">
-                <h2>〰️ Simple Harmonic Motion Calculator</h2>
-                <p class="module-desc">Analyze oscillations:</p>
-                
-                <div class="calculator-grid">
-                    <div class="input-group">
-                        <label>Mass (m) kg</label>
-                        <input type="number" id="shm_m" placeholder="0" step="0.1">
-                    </div>
-                    <div class="input-group">
-                        <label>Spring Constant (k) N/m</label>
-                        <input type="number" id="shm_k" placeholder="0" step="0.1">
-                    </div>
-                    <div class="input-group">
-                        <label>Amplitude (A) m</label>
-                        <input type="number" id="shm_A" placeholder="0" step="0.1">
+                <div id="vectors_angle_tab" class="tab-content">
+                    <div class="calculator-grid">
+                        <div class="input-group">
+                            <label>Vector A - X</label>
+                            <input type="number" id="vec_angle_ax" placeholder="0" step="0.1">
+                        </div>
+                        <div class="input-group">
+                            <label>Vector A - Y</label>
+                            <input type="number" id="vec_angle_ay" placeholder="0" step="0.1">
+                        </div>
+                        <div class="input-group">
+                            <label>Vector B - X</label>
+                            <input type="number" id="vec_angle_bx" placeholder="0" step="0.1">
+                        </div>
+                        <div class="input-group">
+                            <label>Vector B - Y</label>
+                            <input type="number" id="vec_angle_by" placeholder="0" step="0.1">
+                        </div>
                     </div>
                 </div>
                 
-                <button class="btn-calculate" onclick="calculate('shm')">Calculate</button>
-                <div id="shm_results" class="results-section"></div>
-                <div id="shm_graph" class="graph-container"></div>
-            </div>
-
-            <!-- Electrostatics Module -->
-            <div id="electrostatics" class="module-view">
-                <h2>⚛️ Electrostatics Calculator</h2>
-                <p class="module-desc">Apply Coulomb's Law:</p>
-                
-                <div class="calculator-grid">
-                    <div class="input-group">
-                        <label>Charge 1 (q₁) C</label>
-                        <input type="number" id="elec_q1" placeholder="0" step="0.01e-9">
-                    </div>
-                    <div class="input-group">
-                        <label>Charge 2 (q₂) C</label>
-                        <input type="number" id="elec_q2" placeholder="0" step="0.01e-9">
-                    </div>
-                    <div class="input-group">
-                        <label>Distance (r) m</label>
-                        <input type="number" id="elec_r" placeholder="0" step="0.1">
-                    </div>
-                </div>
-                
-                <button class="btn-calculate" onclick="calculate('electrostatics')">Calculate</button>
-                <div id="elec_results" class="results-section"></div>
-                <div id="elec_graph" class="graph-container"></div>
-            </div>
-
-            <!-- Scientific Calculator -->
-            <div id="calculator" class="module-view">
-                <h2>🧮 Scientific Calculator</h2>
-                <p class="module-desc">Advanced mathematical operations:</p>
-                
-                <div class="calc-display">
-                    <input type="text" id="calc_display" readonly>
-                </div>
-                
-                <div class="calc-buttons">
-                    <button onclick="appendCalc('7')">7</button>
-                    <button onclick="appendCalc('8')">8</button>
-                    <button onclick="appendCalc('9')">9</button>
-                    <button onclick="appendCalc('/')" class="op">÷</button>
-                    <button onclick="appendCalc('4')">4</button>
-                    <button onclick="appendCalc('5')">5</button>
-                    <button onclick="appendCalc('6')">6</button>
-                    <button onclick="appendCalc('*')" class="op">×</button>
-                    <button onclick="appendCalc('1')">1</button>
-                    <button onclick="appendCalc('2')">2</button>
-                    <button onclick="appendCalc('3')">3</button>
-                    <button onclick="appendCalc('-')" class="op">−</button>
-                    <button onclick="appendCalc('0')">0</button>
-                    <button onclick="appendCalc('.')">.</button>
-                    <button onclick="calculateCalc()" class="equals">=</button>
-                    <button onclick="appendCalc('+')" class="op">+</button>
-                    <button onclick="clearCalc()" class="clear">C</button>
-                    <button onclick="appendCalc('sin(')" class="func">sin</button>
-                    <button onclick="appendCalc('cos(')" class="func">cos</button>
-                    <button onclick="appendCalc('sqrt(')" class="func">√</button>
-                </div>
-                
-                <div id="calc_results" class="results-section"></div>
-            </div>
-
-            <!-- Unit Converter Module -->
-            <div id="converter" class="module-view">
-                <h2>🔄 Unit Converter</h2>
-                <p class="module-desc">Convert between different unit systems:</p>
-                
-                <div class="calculator-grid">
-                    <div class="input-group">
-                        <label>Conversion Type</label>
-                        <select id="conv_type" onchange="updateConverterUnits()">
-                            <option value="speed">Speed (m/s, km/h, mph, ft/s, knots)</option>
-                            <option value="mass">Mass (kg, g, mg, lb, oz)</option>
-                            <option value="distance">Distance (m, cm, mm, km, ft, in, mile)</option>
-                            <option value="energy">Energy (J, kJ, MJ, cal, kcal, eV, Wh)</option>
-                            <option value="voltage">Voltage (V, kV, mV, μV)</option>
-                        </select>
-                    </div>
-                    <div class="input-group">
-                        <label>Value to Convert</label>
-                        <input type="number" id="conv_value" placeholder="0" step="0.01">
-                    </div>
-                    <div class="input-group">
-                        <label>From Unit</label>
-                        <select id="conv_from"></select>
-                    </div>
-                    <div class="input-group">
-                        <label>To Unit</label>
-                        <select id="conv_to"></select>
-                    </div>
-                </div>
-                
-                <button class="btn-calculate" onclick="convertUnits()">Convert</button>
-                <div id="conv_results" class="results-section"></div>
+                <button class="btn-calculate" onclick="calculate('vectors')">Calculate</button>
+                <div id="vec_results" class="results-section"></div>
+                <div id="vec_graph" class="graph-container"></div>
             </div>
         </main>
     </div>

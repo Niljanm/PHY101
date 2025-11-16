@@ -1,6 +1,6 @@
 """
 Physics Lab - Web Application
-Flask-based web server for the Physics Calculator
+Flask-based web server with core physics modules
 """
 
 from flask import Flask, render_template, request, jsonify
@@ -8,7 +8,12 @@ import math
 import json
 from datetime import datetime
 from pathlib import Path
-from utils.unit_converter import UnitConverter
+from modules.kinematics import Kinematics
+from modules.freefall_dynamics import FreefallDynamics
+from modules.work_energy import WorkEnergy
+from modules.momentum import Momentum
+from modules.electricity import Electricity
+from modules.vectors import Vectors
 
 app = Flask(__name__)
 app.config['JSON_SORT_KEYS'] = False
@@ -58,81 +63,48 @@ def kinematics():
         s = float(data.get('s', 0))
         v = float(data.get('v', 0))
         
-        results = {}
-        
-        if t != 0:
-            results['v'] = u + a * t
-        if s != 0 and a != 0:
-            v_squared = u**2 + 2*a*s
-            if v_squared >= 0:
-                results['v'] = math.sqrt(v_squared)
-        if a != 0 and (v != 0 or u != 0):
-            results['t'] = (v - u) / a
-        if t != 0 and a != 0:
-            results['s'] = u*t + 0.5*a*t**2
-        if t != 0 and (u != 0 or v != 0):
-            results['s'] = (u + v) * t / 2
-        
+        results = Kinematics.calculate(u=u, a=a, t=t, s=s, v=v)
         save_to_history('Kinematics', data, results)
         return jsonify({'success': True, 'data': results})
     except Exception as e:
-        return jsonify({'success': False, 'error': str(e)}), 400
+        return jsonify({'success': False, 'error': str(e)})
 
-# ==================== OHM'S LAW ====================
-@app.route('/api/ohms_law', methods=['POST'])
-@app.route('/api/ohms-law', methods=['POST'])
-def ohms_law():
+# ==================== FREEFALL DYNAMICS ====================
+@app.route('/api/freefall', methods=['POST'])
+def freefall():
     try:
         data = request.json
-        V = float(data.get('V', 0))
-        I = float(data.get('I', 0))
-        R = float(data.get('R', 0))
-        
-        results = {}
-        
-        if I and R:
-            results['V'] = I * R
-        if V and R and R != 0:
-            results['I'] = V / R
-        if V and I and I != 0:
-            results['R'] = V / I
-        
-        # Power calculations
-        if V and I:
-            results['P'] = V * I
-        if I and R:
-            results['P'] = I**2 * R
-        if V and R and R != 0:
-            results['P'] = V**2 / R
-        
-        save_to_history("Ohm's Law", data, results)
-        return jsonify({'success': True, 'data': results})
-    except Exception as e:
-        return jsonify({'success': False, 'error': str(e)}), 400
-
-# ==================== ENERGY ====================
-@app.route('/api/energy', methods=['POST'])
-def energy():
-    try:
-        data = request.json
-        m = float(data.get('m', 0))
-        v = float(data.get('v', 0))
-        g = float(data.get('g', 9.8))
         h = float(data.get('h', 0))
+        v0 = float(data.get('v0', 0))
+        t = float(data.get('t', 0))
+        g = float(data.get('g', 9.8))
         
-        results = {}
-        
-        if m > 0 and v >= 0:
-            results['KE'] = 0.5 * m * v**2
-        if m > 0 and h >= 0:
-            results['PE'] = m * g * h
-        if m > 0 and v >= 0 and h >= 0:
-            results['ME'] = 0.5*m*v**2 + m*g*h
-        
-        save_to_history('Energy', data, results)
+        results = FreefallDynamics.calculate_freefall(h=h, v0=v0, t=t, g=g)
+        save_to_history('Freefall Dynamics', data, results)
         return jsonify({'success': True, 'data': results})
     except Exception as e:
-        return jsonify({'success': False, 'error': str(e)}), 400
+        return jsonify({'success': False, 'error': str(e)})
+
+# ==================== WORK AND ENERGY ====================
+@app.route('/api/work_energy', methods=['POST'])
+def work_energy():
+    try:
+        data = request.json
+        force = float(data.get('force', 0))
+        distance = float(data.get('distance', 0))
+        mass = float(data.get('mass', 0))
+        velocity = float(data.get('velocity', 0))
+        height = float(data.get('height', 0))
+        g = float(data.get('g', 9.8))
+        
+        results = WorkEnergy.calculate_work_energy(
+            force=force, distance=distance, mass=mass, 
+            velocity=velocity, height=height, g=g
+        )
+        save_to_history('Work and Energy', data, results)
+        return jsonify({'success': True, 'data': results})
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)})
 
 # ==================== MOMENTUM ====================
 @app.route('/api/momentum', methods=['POST'])
@@ -144,231 +116,74 @@ def momentum():
         m2 = float(data.get('m2', 0))
         v2 = float(data.get('v2', 0))
         
-        results = {}
-        
-        if m1 > 0:
-            results['p1'] = m1 * v1
-        if m2 > 0:
-            results['p2'] = m2 * v2
-        if m1 > 0 and m2 > 0:
-            results['p_total'] = m1*v1 + m2*v2
-        
+        results = Momentum.calculate(m1=m1, v1=v1, m2=m2, v2=v2)
         save_to_history('Momentum', data, results)
         return jsonify({'success': True, 'data': results})
     except Exception as e:
-        return jsonify({'success': False, 'error': str(e)}), 400
+        return jsonify({'success': False, 'error': str(e)})
 
-# ==================== OPTICS ====================
-@app.route('/api/optics', methods=['POST'])
-def optics():
+# ==================== ELECTRICITY ====================
+@app.route('/api/electricity', methods=['POST'])
+def electricity():
     try:
         data = request.json
-        f = float(data.get('f', 0))
-        u = float(data.get('u', 0))
-        v = float(data.get('v', 0))
+        calc_type = data.get('type', 'ohms')
         
-        results = {}
+        if calc_type == 'ohms':
+            v = float(data.get('v', 0))
+            i = float(data.get('i', 0))
+            r = float(data.get('r', 0))
+            results = Electricity.calculate_ohms_law(v=v, i=i, r=r)
+        elif calc_type == 'coulombs':
+            q1 = float(data.get('q1', 0))
+            q2 = float(data.get('q2', 0))
+            r = float(data.get('r', 1))
+            results = Electricity.calculate_coulombs_law(q1=q1, q2=q2, r=r)
+        else:
+            results = {}
         
-        if u > 0 and f > 0 and u != f:
-            results['v'] = (u * f) / (u - f)
-        if f > 0 and v > 0 and v != f:
-            results['u'] = (v * f) / (v - f)
-        if u > 0 and v != 0:
-            results['m'] = -v / u
-        if u > 0 and v > 0 and (u + v) != 0:
-            results['f'] = (u * v) / (u + v)
-        
-        save_to_history('Optics', data, results)
+        save_to_history('Electricity', data, results)
         return jsonify({'success': True, 'data': results})
     except Exception as e:
-        return jsonify({'success': False, 'error': str(e)}), 400
+        return jsonify({'success': False, 'error': str(e)})
 
-# ==================== THERMODYNAMICS ====================
-@app.route('/api/thermodynamics', methods=['POST'])
-def thermodynamics():
+# ==================== VECTORS ====================
+@app.route('/api/vectors', methods=['POST'])
+def vectors():
     try:
         data = request.json
-        m = float(data.get('m', 0))
-        c = float(data.get('c', 0))
-        delta_t = float(data.get('delta_t', 0))
+        calc_type = data.get('type', 'magnitude')
         
-        results = {}
+        if calc_type == 'magnitude':
+            x = float(data.get('x', 0))
+            y = float(data.get('y', 0))
+            z = float(data.get('z', 0))
+            results = Vectors.calculate_vector_magnitude(x=x, y=y, z=z)
+        elif calc_type == 'addition':
+            x1 = float(data.get('x1', 0))
+            y1 = float(data.get('y1', 0))
+            x2 = float(data.get('x2', 0))
+            y2 = float(data.get('y2', 0))
+            results = Vectors.calculate_vector_addition(x1=x1, y1=y1, x2=x2, y2=y2)
+        elif calc_type == 'dot':
+            x1 = float(data.get('x1', 0))
+            y1 = float(data.get('y1', 0))
+            x2 = float(data.get('x2', 0))
+            y2 = float(data.get('y2', 0))
+            results = Vectors.calculate_dot_product(x1=x1, y1=y1, x2=x2, y2=y2)
+        elif calc_type == 'angle':
+            x1 = float(data.get('x1', 0))
+            y1 = float(data.get('y1', 0))
+            x2 = float(data.get('x2', 0))
+            y2 = float(data.get('y2', 0))
+            results = Vectors.calculate_angle_between(x1=x1, y1=y1, x2=x2, y2=y2)
+        else:
+            results = {}
         
-        if m and c and delta_t:
-            results['Q'] = m * c * delta_t
-        
-        save_to_history('Thermodynamics', data, results)
+        save_to_history('Vectors', data, results)
         return jsonify({'success': True, 'data': results})
     except Exception as e:
-        return jsonify({'success': False, 'error': str(e)}), 400
-
-# ==================== CIRCULAR MOTION ====================
-@app.route('/api/circular_motion', methods=['POST'])
-@app.route('/api/circular-motion', methods=['POST'])
-def circular_motion():
-    try:
-        data = request.json
-        m = float(data.get('m', 0))
-        v = float(data.get('v', 0))
-        r = float(data.get('r', 0))
-        omega = float(data.get('omega', 0))
-        
-        results = {}
-        
-        if m and v and r and r != 0:
-            results['F_c'] = (m * v**2) / r
-            results['a_c'] = (v**2) / r
-        if v and r and r != 0:
-            results['omega'] = v / r
-        if omega and r:
-            results['v'] = omega * r
-        
-        save_to_history('Circular Motion', data, results)
-        return jsonify({'success': True, 'data': results})
-    except Exception as e:
-        return jsonify({'success': False, 'error': str(e)}), 400
-
-# ==================== PROJECTILE MOTION ====================
-@app.route('/api/projectile_motion', methods=['POST'])
-@app.route('/api/projectile-motion', methods=['POST'])
-def projectile_motion():
-    try:
-        data = request.json
-        v0 = float(data.get('v0', 0))
-        theta = float(data.get('theta', 0))
-        g = float(data.get('g', 9.8))
-        
-        results = {}
-        
-        if v0 and theta:
-            theta_rad = math.radians(theta)
-            results['max_height'] = (v0**2 * math.sin(theta_rad)**2) / (2 * g)
-            results['range'] = (v0**2 * math.sin(2*theta_rad)) / g
-            results['time_of_flight'] = (2 * v0 * math.sin(theta_rad)) / g
-        
-        save_to_history('Projectile Motion', data, results)
-        return jsonify({'success': True, 'data': results})
-    except Exception as e:
-        return jsonify({'success': False, 'error': str(e)}), 400
-
-# ==================== SIMPLE HARMONIC MOTION ====================
-@app.route('/api/shm', methods=['POST'])
-def shm():
-    try:
-        data = request.json
-        m = float(data.get('m', 0))
-        k = float(data.get('k', 0))
-        A = float(data.get('A', 0))
-        
-        results = {}
-        
-        if m and k and m > 0:
-            omega = math.sqrt(k / m)
-            results['omega'] = omega
-            results['T'] = 2 * math.pi / omega
-            results['f'] = 1 / results['T']
-        if k and A:
-            results['E'] = 0.5 * k * A**2
-        if m and k:
-            results['max_v'] = math.sqrt(k / m) * A if A else 0
-        
-        save_to_history('SHM', data, results)
-        return jsonify({'success': True, 'data': results})
-    except Exception as e:
-        return jsonify({'success': False, 'error': str(e)}), 400
-
-# ==================== ELECTROSTATICS ====================
-@app.route('/api/electrostatics', methods=['POST'])
-def electrostatics():
-    try:
-        data = request.json
-        q1 = float(data.get('q1', 0))
-        q2 = float(data.get('q2', 0))
-        r = float(data.get('r', 0))
-        k = float(data.get('k', 8.99e9))
-        
-        results = {}
-        
-        if q1 and q2 and r and r != 0:
-            results['F'] = k * abs(q1 * q2) / (r**2)
-            results['E'] = k * abs(q1) / (r**2)
-            results['V'] = k * q1 / r
-        
-        save_to_history('Electrostatics', data, results)
-        return jsonify({'success': True, 'data': results})
-    except Exception as e:
-        return jsonify({'success': False, 'error': str(e)}), 400
-
-# ==================== SCIENTIFIC CALCULATOR ====================
-@app.route('/api/calculator', methods=['POST'])
-def calculator():
-    try:
-        data = request.json
-        expression = data.get('expression', '0')
-        
-        results = {}
-        
-        try:
-            # Replace math functions for safe evaluation
-            safe_expr = expression
-            safe_expr = safe_expr.replace('sin', f'sin')
-            safe_expr = safe_expr.replace('cos', f'cos')
-            safe_expr = safe_expr.replace('tan', f'tan')
-            safe_expr = safe_expr.replace('sqrt', f'sqrt')
-            safe_expr = safe_expr.replace('π', str(math.pi))
-            safe_expr = safe_expr.replace('e', str(math.e))
-            
-            result = eval(safe_expr, {
-                'sin': lambda x: math.sin(math.radians(x)),
-                'cos': lambda x: math.cos(math.radians(x)),
-                'tan': lambda x: math.tan(math.radians(x)),
-                'sqrt': math.sqrt,
-                '__builtins__': {}
-            })
-            
-            results['result'] = result
-            save_to_history('Scientific Calculator', {'expression': expression}, results)
-            return jsonify({'success': True, 'data': results})
-        except Exception as e:
-            return jsonify({'success': False, 'error': str(e)})
-    except Exception as e:
-        return jsonify({'success': False, 'error': str(e)}), 400
-
-# ==================== UNIT CONVERTER ====================
-@app.route('/api/converter', methods=['POST'])
-def converter():
-    try:
-        data = request.json
-        conv_type = data.get('type', 'speed')
-        value = float(data.get('value', 0))
-        from_unit = data.get('from_unit', '')
-        to_unit = data.get('to_unit', '')
-        
-        results = {}
-        
-        try:
-            if conv_type == 'speed':
-                result = UnitConverter.convert_speed(value, from_unit, to_unit)
-            elif conv_type == 'mass':
-                result = UnitConverter.convert_mass(value, from_unit, to_unit)
-            elif conv_type == 'distance':
-                result = UnitConverter.convert_distance(value, from_unit, to_unit)
-            elif conv_type == 'energy':
-                result = UnitConverter.convert_energy(value, from_unit, to_unit)
-            elif conv_type == 'voltage':
-                result = UnitConverter.convert_voltage(value, from_unit, to_unit)
-            else:
-                result = 0
-            
-            results['result'] = result
-            results['from'] = f"{value} {from_unit}"
-            results['to'] = f"{result} {to_unit}"
-            save_to_history('Unit Converter', data, results)
-            return jsonify({'success': True, 'data': results})
-        except Exception as e:
-            return jsonify({'success': False, 'error': str(e)})
-    except Exception as e:
-        return jsonify({'success': False, 'error': str(e)}), 400
+        return jsonify({'success': False, 'error': str(e)})
 
 # ==================== HISTORY ====================
 @app.route('/api/history', methods=['GET'])
@@ -384,16 +199,10 @@ def clear_history():
         HISTORY_FILE.write_text('[]')
         return jsonify({'status': 'cleared'})
     except (OSError, IOError):
-        # Silently fail on read-only filesystem
         return jsonify({'status': 'cleared'})
 
-# ==================== PAGE ROUTES ====================
 @app.route('/')
 def index():
-    return render_template('index.html')
-
-@app.route('/module/<module_name>')
-def module_page(module_name):
     return render_template('index.html')
 
 if __name__ == '__main__':
