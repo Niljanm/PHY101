@@ -1029,7 +1029,7 @@ body {
     }
     
     .nav-section {
-        padding: 10px 15px;
+        padding: 10px 0;
         gap: 8px;
         flex-wrap: nowrap;
         align-items: stretch;
@@ -1037,12 +1037,13 @@ body {
         flex-direction: column;
         width: 100%;
         border-bottom: 1px solid var(--border-color);
+        box-sizing: border-box;
     }
     
     .nav-section h3 {
         font-size: 12px;
         margin: 5px 0 0 0;
-        padding: 0;
+        padding: 0 15px;
         font-weight: 600;
         color: var(--accent);
     }
@@ -1055,6 +1056,10 @@ body {
         text-align: left;
         width: 100%;
         justify-content: flex-start;
+        box-sizing: border-box;
+        border: none;
+        border-radius: 0;
+        background: none;
     }
     
     .sidebar.collapsed .nav-btn {
