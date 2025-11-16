@@ -1,20 +1,45 @@
-"""
-Kinematics Module
-Equations of motion calculations with visualization
-"""
+"""Kinematics Module"""
+import math
 
-import customtkinter as ctk
-from tkinter import messagebox
-import numpy as np
-from utils.validators import safe_float
-from utils.plotter import create_plot
-
-class KinematicsModule:
-    def __init__(self, parent, save_callback):
-        self.parent = parent
-        self.save_callback = save_callback
+class Kinematics:
+    @staticmethod
+    def calculate(u=0, a=0, t=0, s=0, v=0):
+        """Calculate kinematics using equations of motion"""
+        results = {}
         
-        # Configure parent grid with responsive weights
+        # v = u + at
+        if t != 0 and a != 0:
+            if v == 0:
+                v = u + a * t
+                results['v'] = v
+        
+        # s = ut + 0.5*a*t^2
+        if t != 0 and a != 0:
+            if s == 0:
+                s = u * t + 0.5 * a * t * t
+                results['s'] = s
+        
+        # v^2 = u^2 + 2as
+        if a != 0 and s != 0:
+            v_squared = u * u + 2 * a * s
+            if v_squared >= 0 and v == 0:
+                v = math.sqrt(v_squared)
+                results['v'] = v
+        
+        # Solve for missing values
+        if t != 0 and v != 0 and u != 0 and a == 0:
+            a = (v - u) / t
+            results['a'] = a
+        
+        if a != 0 and v != 0 and u != 0 and t == 0:
+            t = (v - u) / a
+            results['t'] = t
+        
+        if s != 0 and u != 0 and t != 0 and a == 0:
+            a = (2 * (s - u * t)) / (t * t)
+            results['a'] = a
+        
+        return results
         parent.grid_columnconfigure(0, weight=1, minsize=250)
         parent.grid_columnconfigure(1, weight=2)
         parent.grid_rowconfigure(1, weight=1)
