@@ -803,13 +803,18 @@ async function convertUnits() {
         
         const result = await response.json();
         
+        if (!result.success || !result.data || result.data.result === undefined) {
+            alert('Conversion failed: Invalid response from server');
+            return;
+        }
+        
         const resultsDiv = document.getElementById('conv_results');
         resultsDiv.innerHTML = `
             <h3>✓ Result</h3>
             <div class="result-item">
                 <div class="result-label">${value} ${fromUnit}</div>
                 <div class="result-value">=</div>
-                <div class="result-label">${result.result.toFixed(6)} ${toUnit}</div>
+                <div class="result-label">${result.data.result.toFixed(6)} ${toUnit}</div>
             </div>
         `;
         resultsDiv.style.display = 'block';
