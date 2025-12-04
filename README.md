@@ -1,6 +1,6 @@
-# ⚛️ Physics Lab - Master Core Physics Concepts
+# ⚛️ Multi-Module Calculator - Physics Calculator and Visualizer
 
-An interactive web application designed to help students understand and master fundamental physics through practical calculations and real-time visualizations.
+An interactive physics calculator and visualizer designed to help students understand and master fundamental physics concepts through practical calculations and real-time visualizations.
 
 ## What Can You Do With It?
 
@@ -32,7 +32,7 @@ python web_app.py
 ```
 
 ### Step 5: Open in Browser
-Go to `http://localhost:5000` and start learning!
+Go to `http://localhost:5000` and start calculating!
 
 ## The 4 Core Modules
 
