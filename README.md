@@ -1,19 +1,19 @@
-# ⚛️ Physics Lab - A Simple Physics Calculator
+# ⚛️ Physics Lab - Master Core Physics Concepts
 
-A beginner-friendly web app for doing physics calculations! It's got 8 different physics calculators and some cool graphs to visualize what's happening.
+An interactive web application designed to help students understand and master fundamental physics through practical calculations and real-time visualizations.
 
 ## What Can You Do With It?
 
-- **Calculate physics stuff** - kinematics, energy, momentum, electricity, vectors, projectile motion, and circular motion
-- **See graphs** - Every calculation makes an interactive graph
-- **View your history** - See all the calculations you've done
-- **Dark/Light mode** - Pick whatever you like
-- **Works on phones too** - It's responsive!
+- **Calculate core physics** - Kinematics, Newton's Laws, Energy, and Momentum
+- **Visualize instantly** - Every calculation generates interactive graphs
+- **Track progress** - View your calculation history and compare results
+- **Light/Dark mode** - Comfortable viewing in any lighting
+- **Fully responsive** - Works perfectly on desktop, tablet, and mobile
 
 ## How to Run It
 
 ### Step 1: Install Python
-Make sure you have Python 3.8 or higher installed on your computer.
+Make sure you have Python 3.8 or higher installed.
 
 ### Step 2: Get the Code
 ```bash
@@ -32,81 +32,80 @@ python web_app.py
 ```
 
 ### Step 5: Open in Browser
-Go to `http://localhost:5000` and you're done!
+Go to `http://localhost:5000` and start learning!
 
-## The Physics Calculators
+## The 4 Core Modules
 
-1. **Kinematics** - Calculate motion (velocity, acceleration, distance)
-2. **Freefall** - Objects falling with gravity
-3. **Work & Energy** - Kinetic energy, potential energy, work
-4. **Momentum** - Conservation of momentum
-5. **Electricity** - Ohm's law and Coulomb's law
-6. **Vectors** - Vector math and operations
-7. **Projectile Motion** - Calculate how stuff flies through the air
-8. **Circular Motion** - Objects moving in circles
+1. **Kinematics** - Analyze motion using equations of motion (velocity, acceleration, displacement)
+2. **Newton's Laws** - Calculate forces and acceleration using Newton's fundamental laws
+3. **PE & KE** - Understand energy transformations between potential and kinetic energy
+4. **Momentum** - Explore momentum conservation and collisions
 
-## Project Files
+## Project Structure
 
 ```
-physics-app/
-├── web_app.py              # The backend (Python)
-├── requirements.txt        # What you need to install
+PHY101/
+├── web_app.py                 # Flask backend
+├── requirements.txt           # Python dependencies
 ├── templates/
-│   └── index.html          # The website
+│   └── index.html             # Main interface
 ├── static/
-│   ├── script.js           # Makes it work
-│   └── style.css           # Makes it look nice
-└── modules/                # All the physics calculators
+│   ├── script.js              # JavaScript functionality
+│   └── style.css              # Modern styling
+└── modules/                   # Physics calculation modules
     ├── kinematics.py
-    ├── freefall_dynamics.py
-    ├── work_energy.py
     ├── momentum.py
-    ├── electricity.py
-    ├── vectors.py
-    ├── projectile_motion.py
-    └── circular_motion.py
+    └── work_energy.py         # (PE & KE calculations)
 ```
 
 ## How It Works
 
-1. You pick a calculator from the side menu
-2. Type in your numbers
-3. Click "Calculate"
-4. See the answer and a graph
-5. Your calculation gets saved in history
+1. Select a physics module from the sidebar
+2. Input your values in the calculator
+3. Click "Calculate" to see results
+4. View the interactive graph visualization
+5. Results automatically save to your history
 
-## Issues?
+## Features
 
-**Can't see the icons?**
-- Refresh your browser
+- **Real-time Calculations** - Instant results as you input values
+- **Interactive Graphs** - Beautiful visualizations using Plotly
+- **Calculation History** - Track and reference all past calculations
+- **Responsive Design** - Seamless experience across all devices
+- **Dark/Light Themes** - Choose your preferred interface style
+- **Educational Focus** - Perfect for students learning classical mechanics
+
+## Troubleshooting
+
+**Can't see anything?**
+- Refresh your browser (Ctrl+R or Cmd+R)
 
 **Calculations not working?**
-- Make sure you entered valid numbers
-- Check the browser console for errors (press F12)
+- Ensure all inputs are valid numbers
+- Check browser console (F12) for error messages
 
 **App won't start?**
-- Check if Python is installed: `python --version`
-- Make sure port 5000 isn't being used
-- Try installing requirements again: `pip install -r requirements.txt`
+- Verify Python 3.8+ is installed: `python --version`
+- Ensure port 5000 is available
+- Reinstall dependencies: `pip install -r requirements.txt`
 
-## Want to Deploy It?
+## Deploy It Online
 
-You can put this on the internet for free using Vercel:
+Easily deploy to Vercel for free:
 
-1. Push your code to GitHub
-2. Go to https://vercel.com
-3. Connect your GitHub account
-4. Select this project
-5. Click "Deploy"
+1. Push code to GitHub
+2. Visit https://vercel.com
+3. Import your repository
+4. Click "Deploy"
 
-Done! It's live on the internet now!
+## Built With
 
-## Made with
-
-- Python + Flask (the backend)
-- HTML + CSS + JavaScript (the website)
-- Plotly (the graphs)
+- **Backend**: Python + Flask
+- **Frontend**: HTML + CSS + JavaScript
+- **Visualizations**: Plotly
+- **Design**: Modern UI with purple/violet theme
 
 ## License
 
-MIT - Do whatever you want with it!
+MIT - Feel free to use and modify!
+

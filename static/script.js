@@ -113,6 +113,23 @@ async function calculate(module) {
             };
             endpoint = '/api/kinematics';
             break;
+        case 'newtons_law':
+            inputs = {
+                f: parseFloat(document.getElementById('nl_f').value) || 0,
+                m: parseFloat(document.getElementById('nl_m').value) || 0,
+                a: parseFloat(document.getElementById('nl_a').value) || 0
+            };
+            endpoint = '/api/newtons_law';
+            break;
+        case 'pe_ke':
+            inputs = {
+                m: parseFloat(document.getElementById('ek_m').value) || 0,
+                h: parseFloat(document.getElementById('ek_h').value) || 0,
+                v: parseFloat(document.getElementById('ek_v').value) || 0,
+                g: parseFloat(document.getElementById('ek_g').value) || 9.8
+            };
+            endpoint = '/api/pe_ke';
+            break;
         case 'freefall':
             inputs = {
                 h: parseFloat(document.getElementById('ff_h').value) || 0,
@@ -253,6 +270,8 @@ function displayResults(module, results) {
     // Map module names to result div prefixes
     const prefixMap = {
         'kinematics': 'kin',
+        'newtons_law': 'nl',
+        'pe_ke': 'ek',
         'freefall': 'ff',
         'work_energy': 'we',
         'momentum': 'mom',
