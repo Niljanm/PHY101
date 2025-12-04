@@ -9,6 +9,8 @@ import json
 from datetime import datetime
 from pathlib import Path
 from modules.kinematics import Kinematics
+from modules.newtons_law import NewtonsLaw
+from modules.pe_ke import PEandKE
 from modules.freefall_dynamics import FreefallDynamics
 from modules.work_energy import WorkEnergy
 from modules.momentum import Momentum
@@ -67,6 +69,37 @@ def kinematics():
         
         results = Kinematics.calculate(u=u, a=a, t=t, s=s, v=v)
         save_to_history('Kinematics', data, results)
+        return jsonify({'success': True, 'data': results})
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)})
+
+# ==================== NEWTON'S LAW ====================
+@app.route('/api/newtons_law', methods=['POST'])
+def newtons_law():
+    try:
+        data = request.json
+        f = float(data.get('f', 0))
+        m = float(data.get('m', 0))
+        a = float(data.get('a', 0))
+        
+        results = NewtonsLaw.calculate(f=f, m=m, a=a)
+        save_to_history("Newton's Law", data, results)
+        return jsonify({'success': True, 'data': results})
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)})
+
+# ==================== PE & KE ====================
+@app.route('/api/pe_ke', methods=['POST'])
+def pe_ke():
+    try:
+        data = request.json
+        m = float(data.get('m', 0))
+        h = float(data.get('h', 0))
+        v = float(data.get('v', 0))
+        g = float(data.get('g', 9.8))
+        
+        results = PEandKE.calculate(m=m, h=h, v=v, g=g)
+        save_to_history('PE & KE', data, results)
         return jsonify({'success': True, 'data': results})
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)})
